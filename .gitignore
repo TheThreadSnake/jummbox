@@ -3,9 +3,9 @@
 .vs
 /.idea
 /node_modules
-/website/**/beepbox*.js
-/website/**/beepbox*.js.map
-/website/beepbox_offline.html
+/docs/**/beepbox*.js
+/docs/**/beepbox*.js.map
+/docs/beepbox_offline.html
 /editor/*.js
 /player/*.js
 /synth/*.js

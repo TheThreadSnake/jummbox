@@ -66,7 +66,7 @@ on other sites. To rebuild just the player code, run:
 npm run build-player
 ```
 
-The [website/](website) folder contains index.html files to view the interfaces.
+The [docs/](docs) folder contains index.html files to view the interfaces.
 The build process outputs JavaScript files into this folder.
 
 ## Dependencies
