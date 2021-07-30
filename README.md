@@ -43,7 +43,7 @@ The code is divided into several folders. Again, this bit is mostly the same as 
 
 The [synth/](synth) folder has just the code you need to be able to play BeepBox
 songs out loud, and you could use this code in your own projects, like a web
-game. After compiling the synth code, open website/synth_example.html to see a
+game. After compiling the synth code, open docs/synth_example.html to see a
 demo using it. To rebuild just the synth code, run:
 
 ```cmd
@@ -51,7 +51,7 @@ npm run build-synth
 ```
 
 The [editor/](editor) folder has additional code to display the online song
-editor interface. After compiling the editor code, open website/index.html to
+editor interface. After compiling the editor code, open docs/index.html to
 see the editor interface. To rebuild just the editor code, run:
 
 ```cmd
@@ -65,7 +65,7 @@ on other sites. To rebuild just the player code, run:
 npm run build-player
 ```
 
-The [website/](website) folder contains index.html files to view the interfaces.
+The [docs/](docs) folder contains index.html files to view the interfaces.
 The build process outputs JavaScript files into this folder.
 
 ## Dependencies

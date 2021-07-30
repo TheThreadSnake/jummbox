@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 	<link rel='shortcut icon' type='image/x-icon' href='./favicon.ico' />
@@ -25,8 +25,7 @@
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 	<link rel="icon" type="image/png" sizes="32x32" href="/icon_32.png" />
 	<link rel="manifest" href="/manifest.webmanifest" />
-	<link href="https://fonts.googleapis.com/css?family=B612" rel="stylesheet" rel="stylesheet" media="none" onload="if (this.media != 'all') this.media='all';" /> <!-- this is a trick to load CSS asynchronously. -->
-	<meta name="robots" content="noindex, nofollow" />
+	<link href="https://fonts.googleapis.com/css?family=B612" rel="stylesheet" media="none" onload="if (this.media != 'all') this.media='all';" /> <!-- this is a trick to load CSS asynchronously. -->
 	<style type="text/css">
 
 		html {
@@ -96,7 +95,6 @@
 
 		.donation input[type="submit"] {
 			-webkit-appearance: none;
-			appearance: none;
 			background: none;
 			border: none;
 			font-family: inherit;
@@ -124,13 +122,13 @@
 				justify-content: space-between;
 			}
 
-			/*.instructions-column {
+			.instructions-column {
 				width: 375px;
 			}
 
 			.twitter-column {
 				width: 300px;
-			}*/
+			}
 		}
 
 		/* narrow screen */
@@ -162,15 +160,17 @@
 		<section>
 
 			<h1>
-				<font color="#9c64f7">MicroBox Offline<br>μB</font>
-				<div id="jummboxPlant" style="display: inline; color:#62a13b"></div>
+				<font color="#9c64f7">MicroBox<br>μB</font>
+				<span id="jummboxPlant" style="display: inline; color:#62a13b"></span>
 			</h1>
+			
 			<p id="introduction">
-				This is an online (and offline!) tool for sketching and sharing chiptune melodies.<br>
-				It is a modification of the <a href="https://www.beepbox.co/">original BeepBox</a> by John Nesky.
+				This is an online tool for sketching and sharing chiptune melodies.<br>
+				It's a modification of <a href="https://jummbus.bitbucket.io/">Jummbox</a> which in turn is a modifcation of the <a href="https://www.beepbox.co/">original BeepBox</a> by John Nesky.
 			</p>
 			<p>
-				If you're familiar with BeepBox and just want to learn what JummBox does differently, check out this <a href="https://youtu.be/26yDP4ACuzE">overview video</a>.
+				If you're familiar with BeepBox and just want to learn what JummBox did differently, check out this <a href="https://youtu.be/26yDP4ACuzE">overview video</a>.
+				You can also find the latest patch notes <a href="https://jummbus.bitbucket.io/patch_notes/2.3.html">here</a>.
 			</p>
 			<p>
 				All song data is contained in the URL at the top of your browser.
@@ -178,17 +178,17 @@
 				When you are satisfied with your song, just copy and paste the URL to save and share your song!
 			</p>
 			<!--
-			<div class="donation">
-				BeepBox is a passion project, and will always be free to use. If you find it valuable and have the means, any gratuity via
-				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-					<input type="hidden" name="cmd" value="_donations" />
-					<input type="hidden" name="business" value="QZJTX9GRYEV9N" />
-					<input type="hidden" name="currency_code" value="USD" />
-					<input type="submit" name="submit" value="Paypal"/>
-				</form>
-				would be appreciated!
-			</div>
-			-->
+	<div class="donation">
+		BeepBox is a passion project, and will always be free to use. If you find it valuable and have the means, any gratuity via
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+			<input type="hidden" name="cmd" value="_donations" />
+			<input type="hidden" name="business" value="QZJTX9GRYEV9N" />
+			<input type="hidden" name="currency_code" value="USD" />
+			<input type="submit" name="submit" value="Paypal"/>
+		</form>
+		would be appreciated!
+	</div>
+	-->
 		</section>
 
 		<div class="column-container">
@@ -274,10 +274,7 @@
 						About
 					</h2>
 					<p>
-						JummBox is developed by Jummbus. You can find him sporadically at <a href="https://twitter.com/jummbus">twitter.com/jummbus</a>.<br><br>
-						BeepBox was originally developed by <a href="http://www.johnnesky.com">John Nesky</a>, also known as <a href="https://twitter.com/shaktool">@shaktool</a>.
-					</p>
-					<p>
+						MicroBox is a mod of Jummbox developed by ThreadSnake. Their twitter is <a href="https://twitter.com/theThreadSnake">twitter.com/theThreadSnake</a>.<br><br>
 						JummBox is developed by Jummbus. You can find him sporadically at <a href="https://twitter.com/jummbus">twitter.com/jummbus</a>.<br><br>
 						BeepBox was originally developed by <a href="http://www.johnnesky.com">John Nesky</a>, also known as <a href="https://twitter.com/shaktool">@shaktool</a>.
 					</p>
@@ -286,6 +283,9 @@
 					</p>
 					<p>
 						Neither ThreadSnake nor MicroBox assume responsibility for any copyrighted material played on MicroBox. No songs are ever received, recorded, or distributed by MicroBox's servers. All song data is contained in the URL after the hash (#) mark, and MicroBox running inside your browser converts that data into sound waves.
+					</p>
+					<p>
+						MicroBox does not collect, track, or share any user data.
 					</p>
 					<p id="offline-instructions">
 						You can download <a download="jummbox_offline.html" href="jummbox_offline.html">an offline version of MicroBox</a> to use when you don't have access to the internet. The features are otherwise the same.
@@ -296,6 +296,15 @@
 					</p>
 				</section>
 			</main>
+			<aside class="twitter-column">
+				<h2>
+					Shared on Twitter:
+				</h2>
+				<div style="background: black;">
+					<a class="twitter-timeline" data-width="300" data-height="2000" data-link-color="#9988ff" data-chrome="noheader nofooter transparent" data-dnt="true" data-theme="dark" href="https://twitter.com/beepboxco?ref_src=twsrc%5Etfw">Songs retweeted by @beepboxco</a>
+					<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+				</div>
+			</aside>
 		</div>
 	</div>
 
@@ -331,7 +340,32 @@
 			//document.getElementById("offline-instructions").innerHTML = 'You can use BeepBox when your device is offline if you put a shortcut to BeepBox on your home screen. <ul><li>Chrome: find the "Add to Home Screen" option in the ⋮ menu.</li><li>Firefox: find the "Add Page Shortcut" option in the ⋮ menu.</li><li>Safari: find the "Add to Home Screen" option in the bookmark menu.</li></ul>';
 		}
 
-		/* INSERT_BEEPBOX_SOURCE_HERE */
+		function browserHasRequiredFeatures() {
+			"use strict";
+			if (window.AudioContext == undefined && window.webkitAudioContext == undefined) {
+				return false;
+			}
+
+			try {
+				eval("class T {}");
+				eval("const a = () => 0");
+				eval("for (const a of []);");
+			} catch (error) {
+				return false;
+			}
+
+			return true;
+		}
+
+		if (browserHasRequiredFeatures()) {
+			// Go ahead and load js beepbox editor interface:
+			var fileref = document.createElement("script");
+			fileref.setAttribute("type", "text/javascript");
+			fileref.setAttribute("src", "beepbox_editor.min.js");
+			document.head.appendChild(fileref);
+		} else {
+			document.getElementById("beepboxEditorContainer").innerHTML = "Sorry, MicroBox doesn't support your browser. Try a recent version of Chrome, Firefox, Edge, Safari, or Opera.";
+		}
 
 	</script>
 </body>
