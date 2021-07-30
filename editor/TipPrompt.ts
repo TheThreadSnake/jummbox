@@ -50,7 +50,7 @@ export class TipPrompt implements Prompt {
 			case "instrumentIndex": {
 				message = div(
 					h2("Instrument Number"),
-					p("JummBox can have multiple instruments per channel, but it can only play one instrument at a time in each channel. This setting determines which of the instruments should be used to play the currently selected pattern. Different patterns in the channel can use different instruments."),
+					p("MicroBox can have multiple instruments per channel, but it can only play one instrument at a time in each channel. This setting determines which of the instruments should be used to play the currently selected pattern. Different patterns in the channel can use different instruments."),
 				);
 			} break;
 			case "instrumentVolume": {
@@ -102,7 +102,7 @@ export class TipPrompt implements Prompt {
 			case "instrumentType": {
 				message = div(
 					h2("Instrument Type"),
-					p("JummBox comes with many instrument presets. You can also create your own custom instruments!"),
+					p("MicroBox comes with many instrument presets. You can also create your own custom instruments!"),
 					p("There are also options for copying and pasting instrument settings and for generating random instruments at the top of the instrument type menu."),
 				);
 			} break;
@@ -141,13 +141,13 @@ export class TipPrompt implements Prompt {
 			case "chipWave": {
 				message = div(
 					h2("Chip Wave"),
-					p("JummBox comes with some sound waves based on classic electronic sound chips, as well as several unique waves."),
+					p("MicroBox comes with some sound waves based on classic electronic sound chips, as well as several unique waves."),
 				);
 			} break;
 			case "chipNoise": {
 				message = div(
 					h2("Noise"),
-					p("JummBox comes with several basic noise sounds. These do not have any distinct musical pitch, and can be used like drums to create beats and emphasize your song's rhythm."),
+					p("MicroBox comes with several basic noise sounds. These do not have any distinct musical pitch, and can be used like drums to create beats and emphasize your song's rhythm."),
 				);
 			} break;
 			case "pulseEnvelope": {
@@ -267,7 +267,7 @@ export class TipPrompt implements Prompt {
 			case "effects": {
 				message = div(
 					h2("Effects"),
-					p("JummBox has two special effects you can add to instruments. You can turn on either effect, or both at once."),
+					p("MicroBox has two special effects you can add to instruments. You can turn on either effect, or both at once."),
 					p("Reverb is a kind of echo effect. You can use the \"reverb\" slider in the \"Song Settings\" section above to control the amount of reverb for instruments that enable it. A little bit helps instruments sound more natural. Adding a lot of reverb can add sense of depth or mystery."),
 					p("The chorus effect combines multiple copies of the instrument's sound and adds a bit of vibrato to simulate an ensemble of instruments or voices."),
 				);
