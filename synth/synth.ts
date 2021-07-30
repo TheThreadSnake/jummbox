@@ -919,7 +919,7 @@ export class Instrument {
         if (instrumentObject == undefined) instrumentObject = {};
 
         let type: InstrumentType = Config.instrumentTypeNames.indexOf(instrumentObject["type"]);
-        if (type == -1) type = isModChannel ? InstrumentType.mod : (isNoiseChannel ? InstrumentType.noise : InstrumentType.chip);
+        if (type.valueOf() == -1) type = isModChannel ? InstrumentType.mod : (isNoiseChannel ? InstrumentType.noise : InstrumentType.chip);
         this.setTypeAndReset(type, isNoiseChannel, isModChannel);
 
         if (instrumentObject["preset"] != undefined) {

@@ -22,7 +22,7 @@ The source code is available under the MIT license. The code is written in
 [node & npm](https://www.npmjs.com/get-npm), so install those first. Then to
 build this project, open the command line and run:
 
-```
+```cmd
 git clone https://github.com/johnnesky/beepbox.git
 cd beepbox
 npm install
@@ -31,12 +31,11 @@ npm run build
 
 A note for MicroBox: You may also have to install these additional dependencies if they are not picked up automatically.
 
-```
+```cmd
 npm install select2
 npm install @types/select2
 npm install @types/jquery
 ```
-
 
 ## Code
 
@@ -47,7 +46,7 @@ songs out loud, and you could use this code in your own projects, like a web
 game. After compiling the synth code, open website/synth_example.html to see a
 demo using it. To rebuild just the synth code, run:
 
-```
+```cmd
 npm run build-synth
 ```
 
@@ -55,14 +54,14 @@ The [editor/](editor) folder has additional code to display the online song
 editor interface. After compiling the editor code, open website/index.html to
 see the editor interface. To rebuild just the editor code, run:
 
-```
+```cmd
 npm run build-editor
 ```
 
 The [player/](player) folder has a miniature song player interface for embedding
 on other sites. To rebuild just the player code, run:
 
-```
+```cmd
 npm run build-player
 ```
 
