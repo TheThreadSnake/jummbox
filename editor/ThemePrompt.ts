@@ -15,6 +15,7 @@ export class ThemePrompt implements Prompt {
 		option({ value: "dark competition" }, "BeepBox Competition Dark"),
 		option({ value: "jummbox classic" }, "JummBox Dark"),
 		option({ value: "jummbox light" }, "JummBox Light"), // It's not ready to see the world yet...
+		option({ value: "microbox classic"}, "MicroBox Dark"),
 		option({ value: "forest" }, "Forest"),
 		option({ value: "canyon" }, "Canyon"),
 		option({ value: "midnight"}, "Midnight"),

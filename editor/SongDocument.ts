@@ -75,7 +75,7 @@ export class SongDocument {
 		this.displayBrowserUrl = window.localStorage.getItem("displayBrowserUrl") != "false";
 		this.displayVolumeBar = window.localStorage.getItem("displayVolumeBar") != "false";
 		this.fullScreen = window.localStorage.getItem("fullScreen") || "normal";
-		this.colorTheme = window.localStorage.getItem("colorTheme") || "jummbox classic";
+		this.colorTheme = window.localStorage.getItem("colorTheme") || "microbox classic";
 
 		ColorConfig.setTheme(this.colorTheme);
 		Layout.setFullScreen(this.fullScreen);
