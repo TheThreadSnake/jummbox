@@ -4504,9 +4504,9 @@ export class Synth {
 				chorusTap5Index += chorusTap5Delta;
 
 				// Reverb, implemented using a feedback delay network with a Hadamard matrix and lowpass filters.
-				// good ratios:	0.555235 + 0.618033 + 0.818 +   1.0 = 2.991268
-				// Delay lengths:  3041	 + 3385	 + 4481  +  5477 = 16384 = 2^14
-				// Buffer offsets: 3041	-> 6426   -> 10907 -> 16384
+				// good ratios:		0.555235 + 0.618033 + 0.818 +   1.0 = 2.991268
+				// Delay lengths:	3041	 + 3385		+ 4481	+  5477 = 16384 = 2^14
+				// Buffer offsets:	3041	-> 6426	   -> 10907 -> 16384
 				const reverbDelayPos1: number = (reverbDelayPos + 3041) & 0x3FFF;
 				const reverbDelayPos2: number = (reverbDelayPos + 6426) & 0x3FFF;
 				const reverbDelayPos3: number = (reverbDelayPos + 10907) & 0x3FFF;
@@ -5044,6 +5044,10 @@ export class Synth {
 
 	private syncTones(channel: number, toneList: Deque<Tone>, instrument: Instrument, pitches: number[], note: Note, prevNote: Note | null, nextNote: Note | null, currentPart: number): void {
 		let toneCount: number = 0;
+		// Mod channels don't ever tie over, so the real start point is always simply the note's start.
+		let noteStartAdjust = (channel < this.song!.pitchChannelCount + this.song!.noiseChannelCount)
+			? Math.max(0, this.tyingOver[channel])
+			: 0;
 		if (instrument.getChord().arpeggiates) {
 			let tone: Tone;
 			if (toneList.count() == 0) {
@@ -5061,7 +5065,7 @@ export class Synth {
 			tone.chordSize = 1;
 			tone.instrument = instrument;
 			tone.note = note;
-			tone.noteStart = note.start - Math.max(0, this.tyingOver[channel]);
+			tone.noteStart = note.start - noteStartAdjust;
 			tone.noteEnd = note.end;
 			tone.prevNote = prevNote;
 			tone.nextNote = nextNote;
@@ -5075,14 +5079,14 @@ export class Synth {
 				let prevNoteForThisTone: Note | null = (prevNote && prevNote.pitches.length > i) ? prevNote : null;
 				let noteForThisTone: Note = note;
 				let nextNoteForThisTone: Note | null = (nextNote && nextNote.pitches.length > i) ? nextNote : null;
-				let noteStart: number = noteForThisTone.start + strumOffsetParts - Math.max(0, this.tyingOver[channel]);
+				let noteStart: number = noteForThisTone.start + strumOffsetParts - noteStartAdjust;
 
 				if (noteStart > currentPart) {
 					if (toneList.count() > i && (transition.isSeamless || this.tyingOver[channel] >= 0 ) && prevNoteForThisTone != null) {
 						nextNoteForThisTone = noteForThisTone;
 						noteForThisTone = prevNoteForThisTone;
 						prevNoteForThisTone = null;
-						noteStart = noteForThisTone.start + strumOffsetParts - Math.max(0, this.tyingOver[channel]) ;
+						noteStart = noteForThisTone.start + strumOffsetParts - noteStartAdjust ;
 					} else {
 						break;
 					}
