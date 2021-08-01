@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-# Compile player/main.ts into build/player/main.js and dependencies
+# Compile src/player/main.ts into build/src/player/main.js and dependencies
 npx tsc -p tsconfig_player.json
 
-# Combine build/player/main.js and dependencies into docs/player/beepbox_player.js
-npx rollup build/player/main.js \
+# Combine build/src/player/main.js and dependencies into docs/player/beepbox_player.js
+npx rollup build/src/player/main.js \
 	--file docs/player/beepbox_player.js \
 	--format iife \
 	--output.name beepbox \

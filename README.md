@@ -41,7 +41,7 @@ npm install @types/jquery
 
 The code is divided into several folders. Again, this bit is mostly the same as BeepBox. I will include the original excerpt again for reference.
 
-The [synth/](synth) folder has just the code you need to be able to play BeepBox
+The [src/synth/](src/synth) folder has just the code you need to be able to play BeepBox
 songs out loud, and you could use this code in your own projects, like a web
 game. After compiling the synth code, open docs/synth_example.html to see a
 demo using it. To rebuild just the synth code, run:
@@ -50,7 +50,7 @@ demo using it. To rebuild just the synth code, run:
 npm run build-synth
 ```
 
-The [editor/](editor) folder has additional code to display the online song
+The [src/editor/](src/editor) folder has additional code to display the online song
 editor interface. After compiling the editor code, open docs/index.html to
 see the editor interface. To rebuild just the editor code, run:
 
@@ -58,7 +58,7 @@ see the editor interface. To rebuild just the editor code, run:
 npm run build-editor
 ```
 
-The [player/](player) folder has a miniature song player interface for embedding
+The [src/player/](src/player) folder has a miniature song player interface for embedding
 on other sites. To rebuild just the player code, run:
 
 ```cmd

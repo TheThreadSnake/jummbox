@@ -1,17 +1,5 @@
-.dropbox
-.DS_Store
-.vs
-/.idea
 /node_modules
-/docs/**/beepbox*.js
-/docs/**/beepbox*.js.map
 /docs/beepbox_offline.html
-/editor/*.js
-/player/*.js
-/synth/*.js
-/editor/*.js.map
-/player/*.js.map
-/synth/*.js.map
 /**/*.ts.bak
 /**/*.html.bak
 /build

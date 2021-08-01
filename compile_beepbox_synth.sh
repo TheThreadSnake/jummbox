@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-# Compile synth/synth.ts into build/synth/synth.js and dependencies
+# Compile src/synth/synth.ts into build/src/synth/synth.js and dependencies
 npx tsc -p tsconfig_synth_only.json
 
-# Combine build/synth/synth.js and dependencies into docs/beepbox_synth.js
-npx rollup build/synth/synth.js \
+# Combine build/src/synth/synth.js and dependencies into docs/beepbox_synth.js
+npx rollup build/src/synth/synth.js \
 	--file docs/beepbox_synth.js \
 	--format iife \
 	--output.name beepbox \

@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-# Compile editor/main.ts into build/editor/main.js and dependencies
+# Compile src/editor/main.ts into build/src/editor/main.js and dependencies
 npx tsc
 
-# Combine build/editor/main.js and dependencies into docs/beepbox_editor.js
-npx rollup build/editor/main.js \
+# Combine build/src/editor/main.js and dependencies into docs/beepbox_editor.js
+npx rollup build/src/editor/main.js \
 	--file docs/beepbox_editor.js \
 	--format iife \
 	--output.name beepbox \
