@@ -15,10 +15,10 @@ export class ThemePrompt implements Prompt {
 		option({ value: "dark competition" }, "BeepBox Competition Dark"),
 		option({ value: "jummbox classic" }, "JummBox Dark"),
 		option({ value: "jummbox light" }, "JummBox Light"), // It's not ready to see the world yet...
-		option({ value: "microbox classic"}, "MicroBox Dark"),
+		option({ value: "microbox classic" }, "MicroBox Dark"),
 		option({ value: "forest" }, "Forest"),
 		option({ value: "canyon" }, "Canyon"),
-		option({ value: "midnight"}, "Midnight"),
+		option({ value: "midnight" }, "Midnight"),
 	);
 	private readonly _cancelButton: HTMLButtonElement = button({ class: "cancelButton" });
 	private readonly _okayButton: HTMLButtonElement = button({ class: "okayButton", style: "width:45%;" }, "Okay");

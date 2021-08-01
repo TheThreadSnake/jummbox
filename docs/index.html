@@ -1,11 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<link rel='shortcut icon' type='image/x-icon' href='./favicon.ico' />
 	<!-- CDN for jQuery and select2 -->
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-			integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-			crossorigin="anonymous"></script>
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css" rel="stylesheet" />
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js"></script>
 	<meta charset="utf-8" />
@@ -14,7 +14,8 @@
 	<meta name="application-name" content="MicroBox" />
 	<meta name="apple-mobile-web-app-title" content="MicroBox">
 	<meta name="description" content="MicroBox is an online tool for sketching and sharing instrumental melodies." />
-	<meta name="keywords" content="chiptune, instrumental, music, song, melody, composition, tool, free, square wave, microtonal, NES, NSF, MicroBox, microbox, JummBox, jummbox, BeepBox, beepbox" />
+	<meta name="keywords"
+		content="chiptune, instrumental, music, song, melody, composition, tool, free, square wave, microtonal, NES, NSF, MicroBox, microbox, JummBox, jummbox, BeepBox, beepbox" />
 	<meta name="mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -25,9 +26,9 @@
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 	<link rel="icon" type="image/png" sizes="32x32" href="/icon_32.png" />
 	<link rel="manifest" href="/manifest.webmanifest" />
-	<link href="https://fonts.googleapis.com/css?family=B612" rel="stylesheet" media="none" onload="if (this.media != 'all') this.media='all';" /> <!-- this is a trick to load CSS asynchronously. -->
+	<link href="https://fonts.googleapis.com/css?family=B612" rel="stylesheet" media="none"
+		onload="if (this.media != 'all') this.media='all';" /> <!-- this is a trick to load CSS asynchronously. -->
 	<style type="text/css">
-
 		html {
 			background: var(--page-margin, black);
 			overflow-x: hidden;
@@ -137,7 +138,8 @@
 				width: 100%;
 			}
 
-			p, .donation {
+			p,
+			.donation {
 				margin: 1em 0.5em;
 			}
 
@@ -165,11 +167,14 @@
 			</h1>
 			<p id="introduction">
 				This is an online tool for sketching and sharing chiptune melodies.<br>
-				It's a modification of <a href="https://jummbus.bitbucket.io/">Jummbox</a> which in turn is a modifcation of the <a href="https://www.beepbox.co/">original BeepBox</a> by John Nesky.
+				It's a modification of <a href="https://jummbus.bitbucket.io/">Jummbox</a> which in turn is a
+				modifcation of the <a href="https://www.beepbox.co/">original BeepBox</a> by John Nesky.
 			</p>
 			<p>
-				If you're familiar with BeepBox and just want to learn what JummBox did differently, check out this <a href="https://youtu.be/26yDP4ACuzE">overview video</a>.
-				You can also find the latest patch notes <a href="https://jummbus.bitbucket.io/patch_notes/2.3.html">here</a>.
+				If you're familiar with BeepBox and just want to learn what JummBox did differently, check out this <a
+					href="https://youtu.be/26yDP4ACuzE">overview video</a>.
+				You can also find the latest patch notes <a
+					href="https://jummbus.bitbucket.io/patch_notes/2.3.html">here</a>.
 			</p>
 			<p>
 				All song data is contained in the URL at the top of your browser.
@@ -204,11 +209,13 @@
 						Notes go into patterns, and you can edit one pattern at a time.
 						Those numbered boxes at the bottom of the editor are the different patterns you can edit.
 						<span id="bar-editing">
-							Click the other boxes to move to a different part of the song, or click the arrows on the currently selected box to swap which pattern is played during that part of the song.
+							Click the other boxes to move to a different part of the song, or click the arrows on the
+							currently selected box to swap which pattern is played during that part of the song.
 						</span>
 					</p>
 					<p>
-						MicroBox can play several rows of patterns simultaneously, and each row has its own set of patterns.
+						MicroBox can play several rows of patterns simultaneously, and each row has its own set of
+						patterns.
 						Most rows can play melodies or harmonies, but the bottom row is for drums.
 					</p>
 					<p>
@@ -219,7 +226,8 @@
 
 					<div id="keyboard-instructions">
 						<p>
-							When MicroBox has focus (click on its interface above), you can use these keyboard shortcuts: <br />
+							When MicroBox has focus (click on its interface above), you can use these keyboard
+							shortcuts: <br />
 						</p>
 						<ul>
 							<li>Spacebar: play or pause the song</li>
@@ -231,7 +239,8 @@
 							<li>Arrows: move selection</li>
 							<li>[ ]: Move the playhead backward and forward</li>
 							<li>Shift 0-9: reassign the instrument for the currently selected pattern </li>
-							<li>- +: move the notes in the pattern up or down (and hold Shift to move an octave at a time!)</li>
+							<li>- +: move the notes in the pattern up or down (and hold Shift to move an octave at a
+								time!)</li>
 							<li>A: Select all patterns</li>
 							<li>Shift A: Select current channel</li>
 							<li>Enter: insert a bar</li>
@@ -242,19 +251,25 @@
 							<li>M: <b>M</b>ute/unmute current channel</li>
 							<li>Shift M: <b>M</b>ute/unmute all channels
 							<li>S: <b>S</b>olo current channel</li>
-							<li>N: set pattern to the lowest-numbered one not used anywhere in the song (This can help you find gaps in patterns that you missed).</li>
+							<li>N: set pattern to the lowest-numbered one not used anywhere in the song (This can help
+								you find gaps in patterns that you missed).</li>
 							<li>Shift N: set pattern to the lowest-numbered one that is completely empty.</li>
 						</ul>
 					</div>
 					<p>
-						In the note pattern editor, you can click and drag horizontally on a note to adjust its duration.
-						You can also click above or below an existing note to add more notes to be played simultaneously, which is called a chord.
+						In the note pattern editor, you can click and drag horizontally on a note to adjust its
+						duration.
+						You can also click above or below an existing note to add more notes to be played
+						simultaneously, which is called a chord.
 					</p>
 					<p>
-						ADVANCED: Drag vertically from an existing note to bend its pitch, or drag vertically from above or below the note to adjust its volume. You can perform fine volume adjustment if you hold Control while doing this!
+						ADVANCED: Drag vertically from an existing note to bend its pitch, or drag vertically from above
+						or below the note to adjust its volume. You can perform fine volume adjustment if you hold
+						Control while doing this!
 					</p>
 					<p>
-						ADVANCED: Click and drag on the pattern grid to make a selection. You can then press C/V to mass copy/paste parts of your song.
+						ADVANCED: Click and drag on the pattern grid to make a selection. You can then press C/V to mass
+						copy/paste parts of your song.
 
 					</p>
 					<p>
@@ -263,7 +278,8 @@
 						You can also click on the label next to each option for a description of what it does.
 					</p>
 					<p>
-						<a href="https://twitter.com/beepboxco">Check out some of these songs that other people have posted on Twitter!</a>
+						<a href="https://twitter.com/beepboxco">Check out some of these songs that other people have
+							posted on Twitter!</a>
 						If you find something you like, you should let the creator know!
 						And if you see any beginners asking for advice, maybe you can help them!
 					</p>
@@ -273,25 +289,36 @@
 						About
 					</h2>
 					<p>
-						MicroBox is a mod of Jummbox developed by ThreadSnake. Their twitter is <a href="https://twitter.com/theThreadSnake">twitter.com/theThreadSnake</a>.<br><br>
-						JummBox is developed by Jummbus. You can find him sporadically at <a href="https://twitter.com/jummbus">twitter.com/jummbus</a>.<br><br>
-						BeepBox was originally developed by <a href="http://www.johnnesky.com">John Nesky</a>, also known as <a href="https://twitter.com/shaktool">@shaktool</a>.
+						MicroBox is a mod of Jummbox developed by ThreadSnake. Their twitter is <a
+							href="https://twitter.com/theThreadSnake">twitter.com/theThreadSnake</a>.<br><br>
+						JummBox is developed by Jummbus. You can find him sporadically at <a
+							href="https://twitter.com/jummbus">twitter.com/jummbus</a>.<br><br>
+						BeepBox was originally developed by <a href="http://www.johnnesky.com">John Nesky</a>, also
+						known as <a href="https://twitter.com/shaktool">@shaktool</a>.
 					</p>
 					<p>
-						MicroBox does not claim ownership over songs created with it, so original songs belong to their authors.
+						MicroBox does not claim ownership over songs created with it, so original songs belong to their
+						authors.
 					</p>
 					<p>
-						Neither ThreadSnake nor MicroBox assume responsibility for any copyrighted material played on MicroBox. No songs are ever received, recorded, or distributed by MicroBox's servers. All song data is contained in the URL after the hash (#) mark, and MicroBox running inside your browser converts that data into sound waves.
+						Neither ThreadSnake nor MicroBox assume responsibility for any copyrighted material played on
+						MicroBox. No songs are ever received, recorded, or distributed by MicroBox's servers. All song
+						data is contained in the URL after the hash (#) mark, and MicroBox running inside your browser
+						converts that data into sound waves.
 					</p>
 					<p>
 						MicroBox does not collect, track, or share any user data.
 					</p>
 					<p id="offline-instructions">
-						You can download <a download="jummbox_offline.html" href="jummbox_offline.html">an offline version of MicroBox</a> to use when you don't have access to the internet. The features are otherwise the same.
+						You can download <a download="jummbox_offline.html" href="jummbox_offline.html">an offline
+							version of MicroBox</a> to use when you don't have access to the internet. The features are
+						otherwise the same.
 					</p>
 					<p>
-						You can download and use <a href="https://github.com/TheThreadSnake/microbox">the source code</a> under the MIT license.
-						The original BeepBox source code by John Nesky can be found <a href="https://github.com/johnnesky/beepbox">here</a>.
+						You can download and use <a href="https://github.com/TheThreadSnake/microbox">the source
+							code</a> under the MIT license.
+						The original BeepBox source code by John Nesky can be found <a
+							href="https://github.com/johnnesky/beepbox">here</a>.
 					</p>
 				</section>
 			</main>
@@ -300,7 +327,9 @@
 					Shared on Twitter:
 				</h2>
 				<div style="background: black;">
-					<a class="twitter-timeline" data-width="300" data-height="2000" data-link-color="#FFEF89" data-chrome="noheader nofooter transparent" data-dnt="true" data-theme="dark" href="https://twitter.com/beepboxco?ref_src=twsrc%5Etfw">Songs retweeted by @beepboxco</a>
+					<a class="twitter-timeline" data-width="300" data-height="2000" data-link-color="#FFEF89"
+						data-chrome="noheader nofooter transparent" data-dnt="true" data-theme="dark"
+						href="https://twitter.com/beepboxco?ref_src=twsrc%5Etfw">Songs retweeted by @beepboxco</a>
 					<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 				</div>
 			</aside>
@@ -368,4 +397,5 @@
 
 	</script>
 </body>
+
 </html>

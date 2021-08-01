@@ -2,7 +2,7 @@
 
 import { InstrumentType, EnvelopeType, Config, getArpeggioPitchIndex } from "../synth/SynthConfig";
 import { Instrument, Pattern, Note, Song, Synth } from "../synth/synth";
-import {ColorConfig} from "./ColorConfig";
+import { ColorConfig } from "./ColorConfig";
 import { Preset, EditorConfig } from "./EditorConfig";
 import { SongDocument } from "./SongDocument";
 import { Prompt } from "./Prompt";
@@ -401,7 +401,7 @@ export class ExportPrompt implements Prompt {
 		this._close();
 	}
 
-	private _exportToMp3Finish( ): void {
+	private _exportToMp3Finish(): void {
 		const whenEncoderIsAvailable = (): void => {
 			const lamejs: any = (<any>window)["lamejs"];
 			const channelCount: number = 2;

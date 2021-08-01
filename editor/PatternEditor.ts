@@ -854,7 +854,7 @@ export class PatternEditor {
 
 			} else if (this._shiftHeld && this._dragConfirmed) {
 
-				if (this._mouseDragging ) {
+				if (this._mouseDragging) {
 					let start: number = Math.max(0, Math.min((this._doc.song.beatsPerBar - 1) * Config.partsPerBeat, Math.floor(this._cursor.exactPart / Config.partsPerBeat) * Config.partsPerBeat));
 					let end: number = start + Config.partsPerBeat;
 					if (this._cursor.curNote != null) {

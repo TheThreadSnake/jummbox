@@ -183,7 +183,7 @@ export class ChangeMoveAndOverflowNotes extends ChangeGroup {
 			newChannel.muted = oldChannel.muted;
 			newChannel.octave = oldChannel.octave;
 			newChannel.name = oldChannel.name;
-	
+
 			for (const instrument of oldChannel.instruments) {
 				newChannel.instruments.push(instrument);
 			}
@@ -2535,7 +2535,7 @@ export class ChangeNoteLength extends ChangePins {
 }
 
 export class ChangeNoteTruncate extends ChangeSequence {
-	constructor(doc: SongDocument, pattern: Pattern, start: number, end: number, skipNote: Note|null = null, force: boolean = false) {
+	constructor(doc: SongDocument, pattern: Pattern, start: number, end: number, skipNote: Note | null = null, force: boolean = false) {
 		super();
 		let i: number = 0;
 		while (i < pattern.notes.length) {
@@ -2816,7 +2816,7 @@ export class ChangeDragSelectedNotes extends ChangeSequence {
 		if (doc.selection.patternSelectionActive) {
 			this.append(new ChangeSplitNotesAtSelection(doc, pattern));
 		}
-		
+
 		const oldStart: number = doc.selection.patternSelectionStart;
 		const oldEnd: number = doc.selection.patternSelectionEnd;
 		const newStart: number = Math.max(0, Math.min(doc.song.beatsPerBar * Config.partsPerBeat, oldStart + parts));

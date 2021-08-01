@@ -699,7 +699,7 @@ export class ColorConfig {
 					--mod-primary-note-lum-scale: 0;
 				}
 			`,
-		"midnight" :  `
+		"midnight": `
 		:root {
 			--page-margin: #000;
 			--editor-background: #000;
@@ -811,7 +811,7 @@ export class ColorConfig {
 			--mod-primary-note-lum-scale: 0;
 		}
 	`,
-	"microbox classic": `
+		"microbox classic": `
 				:root {
 					--page-margin: #000000;
 					--editor-background: #000000;
