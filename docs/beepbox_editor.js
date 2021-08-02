@@ -12504,16 +12504,16 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
                     interval = max;
                 if (octave && !isNoise) {
                     if (upward) {
-                        interval = Math.min(max, interval + 12);
+                        interval = Math.min(max, interval + Config.pitchesPerOctave);
                     }
                     else {
-                        interval = Math.max(min, interval - 12);
+                        interval = Math.max(min, interval - Config.pitchesPerOctave);
                     }
                 }
                 else {
                     if (upward) {
                         for (let i = interval + 1; i <= max; i++) {
-                            if (isNoise || ignoreScale || Config.scales[doc.song.scale].flags[i % 12]) {
+                            if (isNoise || ignoreScale || true) {
                                 interval = i;
                                 break;
                             }
@@ -12521,7 +12521,7 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
                     }
                     else {
                         for (let i = interval - 1; i >= min; i--) {
-                            if (isNoise || ignoreScale || Config.scales[doc.song.scale].flags[i % 12]) {
+                            if (isNoise || ignoreScale || true) {
                                 interval = i;
                                 break;
                             }
