@@ -1288,7 +1288,7 @@ export class Instrument {
 	}
 
 	public static frequencyFromPitch(pitch: number): number {
-		return 440.0 * Math.pow(2.0, (pitch - 69.0) / 12.0);
+		return Config.centerFrequency * Math.pow(2.0, (pitch - 69.0) / Config.pitchesPerOctave);
 	}
 
 	public static drumsetIndexReferenceDelta(index: number): number {
@@ -2002,8 +2002,8 @@ export class Song {
 				}
 			}
 
-			const octaveOffset: number = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * 12;
-			let lastPitch: number = ((isNoiseChannel || isModChannel) ? 4 : 12) + octaveOffset;
+			const octaveOffset: number = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * Config.pitchesPerOctave;
+			let lastPitch: number = ((isNoiseChannel || isModChannel) ? 4 : Config.pitchesPerOctave) + octaveOffset;
 			const recentPitches: number[] = isModChannel ? [0, 1, 2, 3, 4, 5] : (isNoiseChannel ? [4, 6, 7, 2, 3, 8, 0, 10] : [12, 19, 24, 31, 36, 7, 0]);
 			const recentShapes: any[] = [];
 
@@ -2872,10 +2872,10 @@ export class Song {
 						}
 					}
 
-					const octaveOffset: number = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * 12;
+					const octaveOffset: number = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * Config.pitchesPerOctave;
 					let note: Note | null = null;
 					let pin: NotePin | null = null;
-					let lastPitch: number = ((isNoiseChannel || isModChannel) ? 4 : 12) + octaveOffset;
+					let lastPitch: number = ((isNoiseChannel || isModChannel) ? 4 : Config.pitchesPerOctave) + octaveOffset;
 					const recentPitches: number[] = isModChannel ? [0, 1, 2, 3, 4, 5] : (isNoiseChannel ? [4, 6, 7, 2, 3, 8, 0, 10] : [12, 19, 24, 31, 36, 7, 0]);
 					const recentShapes: any[] = [];
 					for (let i: number = 0; i < recentPitches.length; i++) {
@@ -3157,7 +3157,7 @@ export class Song {
 			if (scale != -1) this.scale = scale;
 		}
 
-		if (jsonObject["key"] != undefined) {
+		if (jsonObject["key"] != undefined) { //TODO: edo decoding
 			if (typeof (jsonObject["key"]) == "number") {
 				this.key = ((jsonObject["key"] + 1200) >>> 0) % Config.keys.length;
 			} else if (typeof (jsonObject["key"]) == "string") {
@@ -5769,7 +5769,7 @@ export class Synth {
 				const arpeggio: number = Math.floor(instrument.arpTime / Config.ticksPerArpeggio);
 				if (chord.harmonizes) {
 					const intervalOffset: number = tone.pitches[1 + getArpeggioPitchIndex(tone.pitchCount - 1, instrument.fastTwoNoteArp, arpeggio)] - tone.pitches[0];
-					tone.intervalMult = Math.pow(2.0, intervalOffset / 12.0);
+					tone.intervalMult = Math.pow(2.0, intervalOffset / Config.pitchesPerOctave);
 					tone.intervalVolumeMult = Math.pow(2.0, -intervalOffset / pitchDamping);
 				} else {
 					pitch = tone.pitches[getArpeggioPitchIndex(tone.pitchCount, instrument.fastTwoNoteArp, arpeggio)];
@@ -5840,7 +5840,7 @@ export class Synth {
 			tone.volumeDelta = (volumeEnd - tone.volumeStart) / runLength;
 		}
 
-		tone.phaseDeltaScale = Math.pow(2.0, ((intervalEnd - intervalStart) * intervalScale / 12.0) / runLength);
+		tone.phaseDeltaScale = Math.pow(2.0, ((intervalEnd - intervalStart) * intervalScale / Config.pitchesPerOctave) / runLength);
 	}
 
 	public static getLFOAmplitude(instrument: Instrument, secondsIntoBar: number): number {
@@ -5943,8 +5943,8 @@ export class Synth {
 
 		const waveLength: number = +wave.length - 1; // The first sample is duplicated at the end, don't double-count it.
 
-		const intervalA: number = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / 12.0);
-		const intervalB: number = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / 12.0) * tone.intervalMult;
+		const intervalA: number = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave);
+		const intervalB: number = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave) * tone.intervalMult;
 		const intervalSign: number = tone.intervalVolumeMult * Config.intervals[instrument.interval].sign;
 		if (instrument.interval == 0 && !instrument.getChord().customInterval) tone.phases[1] = tone.phases[0];
 		const deltaRatio: number = intervalB / intervalA;
@@ -6065,8 +6065,8 @@ export class Synth {
 		const wave: Float32Array = instrument.harmonicsWave.getCustomWave();
 		const waveLength: number = +wave.length - 1; // The first sample is duplicated at the end, don't double-count it.
 
-		const intervalA: number = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / 12.0);
-		const intervalB: number = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / 12.0) * tone.intervalMult;
+		const intervalA: number = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave);
+		const intervalB: number = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave) * tone.intervalMult;
 		const intervalSign: number = tone.intervalVolumeMult * Config.intervals[instrument.interval].sign;
 		if (instrument.interval == 0 && !instrument.getChord().customInterval) tone.phases[1] = tone.phases[0];
 		const deltaRatio: number = intervalB / intervalA;

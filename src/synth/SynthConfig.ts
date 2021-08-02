@@ -194,15 +194,15 @@ export class Config {
 		{ name: "B", isWhiteKey: true, basePitch: 23 },
 	]);
 	public static readonly blackKeyNameParents: ReadonlyArray<number> = [-1, 1, -1, 1, -1, 1, -1, -1, 1, -1, 1, -1];
-	public static readonly tempoMin: number = 30;
-	public static readonly tempoMax: number = 320;
+	public static readonly tempoMin: number = 16;
+	public static readonly tempoMax: number = 512;
 	public static readonly reverbRange: number = 32;
-	public static readonly beatsPerBarMin: number = 3;
-	public static readonly beatsPerBarMax: number = 16;
+	public static readonly beatsPerBarMin: number = 1;
+	public static readonly beatsPerBarMax: number = 32;
 	public static readonly barCountMin: number = 1;
-	public static readonly barCountMax: number = 256;
+	public static readonly barCountMax: number = 512;
 	public static readonly instrumentsPerChannelMin: number = 1;
-	public static readonly instrumentsPerChannelMax: number = 10;
+	public static readonly instrumentsPerChannelMax: number = 16;
 	public static readonly partsPerBeat: number = 24;
 	public static readonly ticksPerPart: number = 2;
 	public static readonly ticksPerArpeggio: number = 3;
@@ -212,7 +212,10 @@ export class Config {
 		{ name: "÷4 (standard)", stepsPerBeat: 4, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: [/*0*/ 3, /*6*/ 9, /*12*/ 17, /*18*/ 21 /*24*/] },
 		{ name: "÷6", stepsPerBeat: 6, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
 		{ name: "÷8", stepsPerBeat: 8, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
-		{ name: "freehand", stepsPerBeat: 24, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
+		{ name: "÷9", stepsPerBeat: 9, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
+		{ name: "÷12", stepsPerBeat: 12, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
+		{ name: "÷16", stepsPerBeat: 16, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
+		{ name: "÷24 (freehand)", stepsPerBeat: 24, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
 	]);
 
 	public static readonly instrumentTypeNames: ReadonlyArray<string> = ["chip", "FM", "noise", "spectrum", "drumset", "harmonics", "PWM", "custom chip", "mod"];
@@ -311,7 +314,7 @@ export class Config {
 		{ name: "arpeggio", harmonizes: false, customInterval: false, arpeggiates: true, isCustomInterval: false, strumParts: 0 },
 		{ name: "custom interval", harmonizes: true, customInterval: true, arpeggiates: true, isCustomInterval: true, strumParts: 0 },
 	]);
-	public static readonly maxChordSize: number = 9; // Pandora's box...
+	public static readonly maxChordSize: number = 9; // Pandora's box... ?0_0
 	public static readonly operatorCount: number = 4;
 	public static readonly algorithms: DictionaryArray<Algorithm> = toNameMap([
 		{ name: "1←(2 3 4)", carrierCount: 1, associatedCarrier: [1, 1, 1, 1], modulatedBy: [[2, 3, 4], [], [], []] },
@@ -409,6 +412,7 @@ export class Config {
 	public static readonly modChannelCountMin: number = 0;
 	public static readonly modChannelCountMax: number = 8;
 	public static readonly noiseInterval: number = 6;
+	public static readonly centerFrequency = 440 //440hz
 	public static readonly pitchesPerOctave: number = 12; // TODO: Use this for converting pitch to frequency.
 	public static readonly drumCount: number = 12;
 	public static readonly modCount: number = 6;
