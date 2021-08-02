@@ -509,38 +509,44 @@ export class PatternEditor {
 	private _snapToPitch(guess: number, min: number, max: number): number {
 		if (guess < min) guess = min;
 		if (guess > max) guess = max;
-		const scale: ReadonlyArray<boolean> = Config.scales[this._doc.song.scale].flags;
-		if (scale[Math.floor(guess) % Config.pitchesPerOctave] || this._doc.song.getChannelIsNoise(this._doc.channel) || this._doc.song.getChannelIsMod(this._doc.channel)) {
 
-			return Math.floor(guess);
-		} else {
-			let topPitch: number = Math.floor(guess) + 1;
-			let bottomPitch: number = Math.floor(guess) - 1;
-			while (!scale[topPitch % Config.pitchesPerOctave]) {
-				topPitch++;
-			}
-			while (!scale[(bottomPitch) % Config.pitchesPerOctave]) {
-				bottomPitch--;
-			}
-			if (topPitch > max) {
-				if (bottomPitch < min) {
-					return min;
-				} else {
-					return bottomPitch;
-				}
-			} else if (bottomPitch < min) {
-				return topPitch;
-			}
-			let topRange: number = topPitch;
-			let bottomRange: number = bottomPitch + 1;
-			if (topPitch % Config.pitchesPerOctave == 0 || topPitch % Config.pitchesPerOctave == 7) {
-				topRange -= 0.5;
-			}
-			if (bottomPitch % Config.pitchesPerOctave == 0 || bottomPitch % Config.pitchesPerOctave == 7) {
-				bottomRange += 0.5;
-			}
-			return guess - bottomRange > topRange - guess ? topPitch : bottomPitch;
-		}
+		// TODO: Figure out how scales should be implemented, and figure this logic out
+
+		return Math.floor(guess);
+
+		// const scale: ReadonlyArray<boolean> = Config.scales[this._doc.song.scale].flags;
+		// if (scale[Math.floor(guess) % Config.pitchesPerOctave] || this._doc.song.getChannelIsNoise(this._doc.channel) || this._doc.song.getChannelIsMod(this._doc.channel)) {
+
+		// 	return Math.floor(guess);
+		// } else {
+			// let topPitch: number = Math.floor(guess) + 1;
+			// let bottomPitch: number = Math.floor(guess) - 1;
+			
+			// while (!scale[topPitch % Config.pitchesPerOctave]) {
+			// 	topPitch++;
+			// }
+			// while (!scale[(bottomPitch) % Config.pitchesPerOctave]) {
+			// 	bottomPitch--;
+			// }
+			// if (topPitch > max) {
+			// 	if (bottomPitch < min) {
+			// 		return min;
+			// 	} else {
+			// 		return bottomPitch;
+			// 	}
+			// } else if (bottomPitch < min) {
+			// 	return topPitch;
+			// }
+			// let topRange: number = topPitch;
+			// let bottomRange: number = bottomPitch + 1;
+			// if (topPitch % Config.pitchesPerOctave == 0 || topPitch % Config.pitchesPerOctave == 7) {
+			// 	topRange -= 0.5;
+			// }
+			// if (bottomPitch % Config.pitchesPerOctave == 0 || bottomPitch % Config.pitchesPerOctave == 7) {
+			// 	bottomRange += 0.5;
+			// }
+			// return guess - bottomRange > topRange - guess ? topPitch : bottomPitch;
+		// }
 	}
 
 	private _copyPins(note: Note): void {
@@ -846,7 +852,7 @@ export class PatternEditor {
 					this._doc.setProspectiveChange(this._dragChange);
 
 					const notesInScale: number = Config.scales[this._doc.song.scale].flags.filter(x => x).length;
-					const pitchRatio: number = this._doc.song.getChannelIsNoise(this._doc.channel) ? 1 : 12 / notesInScale;
+					const pitchRatio: number = this._doc.song.getChannelIsNoise(this._doc.channel) ? 1 : Config.pitchesPerOctave / notesInScale;
 					const draggedParts: number = Math.round((this._mouseX - this._mouseXStart) / (this._partWidth * minDivision)) * minDivision;
 					const draggedTranspose: number = Math.round((this._mouseYStart - this._mouseY) / (this._pitchHeight * pitchRatio));
 					sequence.append(new ChangeDragSelectedNotes(this._doc, this._doc.channel, pattern, draggedParts, draggedTranspose));
@@ -1422,12 +1428,15 @@ export class PatternEditor {
 
 		if (this._renderedFifths != this._doc.showFifth) {
 			this._renderedFifths = this._doc.showFifth;
-			this._backgroundPitchRows[7].setAttribute("fill", this._doc.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
+			this._backgroundPitchRows[Math.round(Config.pitchesPerOctave * Math.log2(3 / 2))].setAttribute("fill", this._doc.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
 		}
 
 		for (let j: number = 0; j < Config.pitchesPerOctave; j++) {
 
-			this._backgroundPitchRows[j].style.visibility = Config.scales[this._doc.song.scale].flags[j] ? "visible" : "hidden";
+			// this._backgroundPitchRows[j].style.visibility = Config.scales[this._doc.song.scale].flags[j] ? "visible" : "hidden";
+			this._backgroundPitchRows[j].style.visibility = "visible";
+			// TODO: Since the scales are all hardcoded for 12edo, I am disabling scales because above 12edo the notes above the first 12 are hidden by default.
+
 		}
 
 		if (this._doc.song.getChannelIsNoise(this._doc.channel)) {

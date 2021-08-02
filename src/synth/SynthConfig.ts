@@ -406,14 +406,14 @@ export class Config {
 	public static readonly harmonicsWavelength: number = 1 << 11; // 2048
 	public static readonly pulseWidthRange: number = 50;
 	public static readonly pitchChannelCountMin: number = 1;
-	public static readonly pitchChannelCountMax: number = 40;
+	public static readonly pitchChannelCountMax: number = 32;
 	public static readonly noiseChannelCountMin: number = 0;
 	public static readonly noiseChannelCountMax: number = 8;
 	public static readonly modChannelCountMin: number = 0;
 	public static readonly modChannelCountMax: number = 8;
 	public static readonly noiseInterval: number = 6;
-	public static readonly centerFrequency = 440 //440hz
-	public static readonly pitchesPerOctave: number = 12; // TODO: Use this for converting pitch to frequency.
+	public static readonly centerFrequency = 425.855
+	public static readonly pitchesPerOctave: number = 31;
 	public static readonly drumCount: number = 12;
 	public static readonly modCount: number = 6;
 	public static readonly pitchOctaves: number = 8;
