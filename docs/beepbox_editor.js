@@ -12453,27 +12453,23 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
                 let pitch = this._oldPitches[i];
                 if (octave && !isNoise) {
                     if (upward) {
-                        pitch = Math.min(maxPitch, pitch + 12);
+                        pitch = Math.min(maxPitch, pitch + Config.pitchesPerOctave);
                     }
                     else {
-                        pitch = Math.max(0, pitch - 12);
+                        pitch = Math.max(0, pitch - Config.pitchesPerOctave);
                     }
                 }
                 else {
                     if (upward) {
                         for (let j = pitch + 1; j <= maxPitch; j++) {
-                            if (isNoise || ignoreScale || Config.scales[doc.song.scale].flags[j % 12]) {
-                                pitch = j;
-                                break;
-                            }
+                            pitch = j;
+                            break;
                         }
                     }
                     else {
                         for (let j = pitch - 1; j >= 0; j--) {
-                            if (isNoise || ignoreScale || Config.scales[doc.song.scale].flags[j % 12]) {
-                                pitch = j;
-                                break;
-                            }
+                            pitch = j;
+                            break;
                         }
                     }
                 }

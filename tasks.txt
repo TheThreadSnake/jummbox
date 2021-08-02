@@ -1,3 +1,12 @@
+
+√	make shift + - move an octave instead of 12 notes
+	make the piano play the right notes
+	add edo customisation in-app
+	figure out how scales will work
+	the piano is squished for high edos
+
+
+
 √ create tone
 √ delete tone
 √ adjust start/end of new tone
