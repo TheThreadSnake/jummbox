@@ -12462,14 +12462,18 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
                 else {
                     if (upward) {
                         for (let j = pitch + 1; j <= maxPitch; j++) {
-                            pitch = j;
-                            break;
+                            if (isNoise || ignoreScale || true) {
+                                pitch = j;
+                                break;
+                            }
                         }
                     }
                     else {
                         for (let j = pitch - 1; j >= 0; j--) {
-                            pitch = j;
-                            break;
+                            if (isNoise || ignoreScale || true) {
+                                pitch = j;
+                                break;
+                            }
                         }
                     }
                 }

@@ -2648,16 +2648,18 @@ class ChangeTransposeNote extends UndoableChange {
 				if (upward) {
 					for (let j: number = pitch + 1; j <= maxPitch; j++) {
 						// if (isNoise || ignoreScale || Config.scales[doc.song.scale].flags[j % 12]) { // TODO: Scales
-						pitch = j;
-						break;
-						// }
+						if (isNoise || ignoreScale || true) { // yes, I made the condition true
+							pitch = j;
+							break;
+						}
 					}
 				} else {
 					for (let j: number = pitch - 1; j >= 0; j--) {
 						// if (isNoise || ignoreScale || Config.scales[doc.song.scale].flags[j % 12]) {
-						pitch = j;
-						break;
-						// }
+						if (isNoise || ignoreScale || true) {
+							pitch = j;
+							break;
+						}
 					}
 				}
 			}
