@@ -80,6 +80,8 @@ var beepbox = (function (exports) {
     Config.ticksPerArpeggio = 3;
     Config.arpeggioPatterns = [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4, 5, 6, 7]];
     Config.rhythms = toNameMap([
+        { name: "÷1 (singlets '_')", stepsPerBeat: 1, roundUpThresholds: [5, 12, 18] },
+        { name: "÷2 (duplets)", stepsPerBeat: 2, roundUpThresholds: [5, 12, 18] },
         { name: "÷3 (triplets)", stepsPerBeat: 3, roundUpThresholds: [5, 12, 18] },
         { name: "÷4 (standard)", stepsPerBeat: 4, roundUpThresholds: [3, 9, 17, 21] },
         { name: "÷5", stepsPerBeat: 5, roundUpThresholds: null },
@@ -5773,6 +5775,7 @@ li.select2-results__option[role=group] > strong:hover {
                         break;
                     case 107:
                         {
+                            charIndex++;
                             this.key = 0;
                         }
                         break;
@@ -18582,7 +18585,7 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
                     this._song.fromBase64String(songData);
                 }
                 catch (error) {
-                    window.alert("Whoops, the song data appears to have been corrupted! Please try to recover the last working version of the song from the \"Recover Recent Song...\" option in BeepBox's \"File\" menu.");
+                    window.alert("Whoops, the song data appears to have been corrupted! Please try to recover the last working version of the song from the \"Recover Recent Song...\" option in BeepBox's \"File\" menu.\n" + error + "\n" + error.stack);
                     return;
                 }
                 const songs = SongRecovery.getAllRecoveredSongs();

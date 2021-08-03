@@ -2259,6 +2259,7 @@ export class Song {
 				// } else {
 				// 	this.key = clamp(0, Config.keys.length, base64CharCodeToInt[compressed.charCodeAt(charIndex++)]);
 				// } // key relic (TODO)
+				charIndex++;
 				this.key = 0;
 			} break;
 			case SongTagCode.loopStart: {

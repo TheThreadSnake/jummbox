@@ -80,6 +80,8 @@ var beepbox = (function (exports) {
     Config.ticksPerArpeggio = 3;
     Config.arpeggioPatterns = [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4, 5, 6, 7]];
     Config.rhythms = toNameMap([
+        { name: "÷1 (singlets '_')", stepsPerBeat: 1, roundUpThresholds: [5, 12, 18] },
+        { name: "÷2 (duplets)", stepsPerBeat: 2, roundUpThresholds: [5, 12, 18] },
         { name: "÷3 (triplets)", stepsPerBeat: 3, roundUpThresholds: [5, 12, 18] },
         { name: "÷4 (standard)", stepsPerBeat: 4, roundUpThresholds: [3, 9, 17, 21] },
         { name: "÷5", stepsPerBeat: 5, roundUpThresholds: null },
@@ -4545,6 +4547,7 @@ var beepbox = (function (exports) {
                         break;
                     case 107:
                         {
+                            charIndex++;
                             this.key = 0;
                         }
                         break;
