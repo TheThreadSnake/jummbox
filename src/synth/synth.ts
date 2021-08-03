@@ -1733,7 +1733,8 @@ export class Song {
 
 		buffer.push(SongTagCode.channelCount, base64IntToCharCode[this.pitchChannelCount], base64IntToCharCode[this.noiseChannelCount], base64IntToCharCode[this.modChannelCount]);
 		buffer.push(SongTagCode.scale, base64IntToCharCode[this.scale]);
-		buffer.push(SongTagCode.key, base64IntToCharCode[this.key]);
+		// buffer.push(SongTagCode.key, base64IntToCharCode[this.key]); // key relic (TODO)
+		buffer.push(SongTagCode.key, base64IntToCharCode[0]);
 		buffer.push(SongTagCode.loopStart, base64IntToCharCode[this.loopStart >> 6], base64IntToCharCode[this.loopStart & 0x3f]);
 		buffer.push(SongTagCode.loopEnd, base64IntToCharCode[(this.loopLength - 1) >> 6], base64IntToCharCode[(this.loopLength - 1) & 0x3f]);
 		buffer.push(SongTagCode.tempo, base64IntToCharCode[this.tempo >> 6], base64IntToCharCode[this.tempo & 0x3F]);
@@ -2253,11 +2254,12 @@ export class Song {
 				if (variant == "beepbox") this.scale = 0;
 			} break;
 			case SongTagCode.key: {
-				if (beforeSeven && variant == "beepbox") {
-					this.key = clamp(0, Config.keys.length, 11 - base64CharCodeToInt[compressed.charCodeAt(charIndex++)]);
-				} else {
-					this.key = clamp(0, Config.keys.length, base64CharCodeToInt[compressed.charCodeAt(charIndex++)]);
-				}
+				// if (beforeSeven && variant == "beepbox") {
+				// 	this.key = clamp(0, Config.keys.length, 11 - base64CharCodeToInt[compressed.charCodeAt(charIndex++)]);
+				// } else {
+				// 	this.key = clamp(0, Config.keys.length, base64CharCodeToInt[compressed.charCodeAt(charIndex++)]);
+				// } // key relic (TODO)
+				this.key = 0;
 			} break;
 			case SongTagCode.loopStart: {
 				if (beforeFive && variant == "beepbox") {
@@ -3123,7 +3125,7 @@ export class Song {
 			"format": Song._format,
 			"version": Song._latestJummBoxVersion,
 			"scale": Config.scales[this.scale].name,
-			"key": Config.keys[this.key].name,
+			// "key": Config.keys[this.key].name, // key relic (TODO)
 			"introBars": this.loopStart,
 			"loopBars": this.loopLength,
 			"beatsPerBar": this.beatsPerBar,
@@ -3137,7 +3139,7 @@ export class Song {
 		};
 	}
 
-	public fromJsonObject(jsonObject: any): void {
+	public fromJsonObject(jsonObject: any): void { //TODO: edo decoding
 		this.initToDefault(true);
 		if (!jsonObject) return;
 
@@ -3160,25 +3162,26 @@ export class Song {
 			if (scale != -1) this.scale = scale;
 		}
 
-		if (jsonObject["key"] != undefined) { //TODO: edo decoding
-			if (typeof (jsonObject["key"]) == "number") {
-				this.key = ((jsonObject["key"] + 1200) >>> 0) % Config.keys.length;
-			} else if (typeof (jsonObject["key"]) == "string") {
-				const key: string = jsonObject["key"];
-				const letter: string = key.charAt(0).toUpperCase();
-				const symbol: string = key.charAt(1).toLowerCase();
-				const letterMap: Readonly<Dictionary<number>> = { "C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11 };
-				const accidentalMap: Readonly<Dictionary<number>> = { "#": 1, "♯": 1, "b": -1, "♭": -1 };
-				let index: number | undefined = letterMap[letter];
-				const offset: number | undefined = accidentalMap[symbol];
-				if (index != undefined) {
-					if (offset != undefined) index += offset;
-					if (index < 0) index += 12;
-					index = index % 12;
-					this.key = index;
-				}
-			}
-		}
+		// if (jsonObject["key"] != undefined) {
+		// 	if (typeof (jsonObject["key"]) == "number") {
+		// 		this.key = ((jsonObject["key"] + 1200) >>> 0) % Config.keys.length;
+		// 	} else if (typeof (jsonObject["key"]) == "string") {
+		// 		const key: string = jsonObject["key"];
+		// 		const letter: string = key.charAt(0).toUpperCase();
+		// 		const symbol: string = key.charAt(1).toLowerCase();
+		// 		const letterMap: Readonly<Dictionary<number>> = { "C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11 };
+		// 		const accidentalMap: Readonly<Dictionary<number>> = { "#": 1, "♯": 1, "b": -1, "♭": -1 };
+		// 		let index: number | undefined = letterMap[letter];
+		// 		const offset: number | undefined = accidentalMap[symbol];
+		// 		if (index != undefined) {
+		// 			if (offset != undefined) index += offset;
+		// 			if (index < 0) index += 12;
+		// 			index = index % 12;
+		// 			this.key = index;
+		// 		}
+		// 	}
+		// }
+		this.key = 0; // key relic (TODO)
 
 		if (jsonObject["beatsPerMinute"] != undefined) {
 			this.tempo = clamp(Config.tempoMin, Config.tempoMax + 1, jsonObject["beatsPerMinute"] | 0);
@@ -5257,7 +5260,8 @@ export class Synth {
 				basePitch = Config.spectrumBasePitch;
 				baseVolume = 0.6; // Note: spectrum is louder for drum channels than pitch channels!
 			} else {
-				basePitch = Config.keys[song.key].basePitch;
+				// basePitch = Config.keys[song.key].basePitch; // key relic (TODO), more following
+				basePitch = 0;
 				baseVolume = 0.3;
 			}
 			volumeReferencePitch = Config.spectrumBasePitch;
@@ -5273,22 +5277,26 @@ export class Synth {
 			volumeReferencePitch = basePitch;
 			pitchDamping = Config.chipNoises[instrument.chipNoise].isSoft ? 24.0 : 60.0;
 		} else if (instrument.type == InstrumentType.fm) {
-			basePitch = Config.keys[song.key].basePitch;
+			// basePitch = Config.keys[song.key].basePitch;
+			basePitch = 0;
 			baseVolume = 0.03;
 			volumeReferencePitch = 16;
 			pitchDamping = 48;
 		} else if (instrument.type == InstrumentType.chip || instrument.type == InstrumentType.customChipWave) {
-			basePitch = Config.keys[song.key].basePitch;
+			// basePitch = Config.keys[song.key].basePitch;
+			basePitch = 0;
 			baseVolume = 0.03375; // looks low compared to drums, but it's doubled for chorus and drums tend to be loud anyway.
 			volumeReferencePitch = 16;
 			pitchDamping = 48;
 		} else if (instrument.type == InstrumentType.harmonics) {
-			basePitch = Config.keys[song.key].basePitch;
+			// basePitch = Config.keys[song.key].basePitch;
+			basePitch = 0;
 			baseVolume = 0.025;
 			volumeReferencePitch = 16;
 			pitchDamping = 48;
 		} else if (instrument.type == InstrumentType.pwm) {
-			basePitch = Config.keys[song.key].basePitch;
+			// basePitch = Config.keys[song.key].basePitch;
+			basePitch = 0;
 			baseVolume = 0.04725;
 			volumeReferencePitch = 16;
 			pitchDamping = 48;

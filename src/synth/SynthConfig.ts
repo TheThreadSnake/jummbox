@@ -180,20 +180,21 @@ export class Config {
 
 	]);
 	public static readonly keys: DictionaryArray<Key> = toNameMap([
-		{ name: "C", isWhiteKey: true, basePitch: 12 }, // C0 has index 12 on the MIDI scale. C7 is 96, and C9 is 120. C10 is barely in the audible range.
-		{ name: "C♯", isWhiteKey: false, basePitch: 13 },
-		{ name: "D", isWhiteKey: true, basePitch: 14 },
-		{ name: "D♯", isWhiteKey: false, basePitch: 15 },
-		{ name: "E", isWhiteKey: true, basePitch: 16 },
-		{ name: "F", isWhiteKey: true, basePitch: 17 },
-		{ name: "F♯", isWhiteKey: false, basePitch: 18 },
-		{ name: "G", isWhiteKey: true, basePitch: 19 },
-		{ name: "G♯", isWhiteKey: false, basePitch: 20 },
-		{ name: "A", isWhiteKey: true, basePitch: 21 },
-		{ name: "A♯", isWhiteKey: false, basePitch: 22 },
-		{ name: "B", isWhiteKey: true, basePitch: 23 },
+		{ name: "0", isWhiteKey: true, basePitch: 0 }, // C0 has index 12 on the MIDI scale. C7 is 96, and C9 is 120. C10 is barely in the audible range.
+		{ name: "1", isWhiteKey: false, basePitch: 1 }, // TODO: I lowered these by 12, idk if I still want to have midi import so I might have to adjust if I don't.
+		{ name: "2", isWhiteKey: true, basePitch: 2 },
+		{ name: "3", isWhiteKey: false, basePitch: 3 },
+		{ name: "4", isWhiteKey: true, basePitch: 4 },
+		{ name: "5", isWhiteKey: true, basePitch: 5 },
+		{ name: "6", isWhiteKey: false, basePitch: 6 },
+		{ name: "7", isWhiteKey: true, basePitch: 7 },
+		{ name: "8", isWhiteKey: false, basePitch: 8 },
+		{ name: "9", isWhiteKey: true, basePitch: 9 },
+		{ name: "A", isWhiteKey: false, basePitch: 10 },
+		{ name: "B", isWhiteKey: true, basePitch: 11 },
 	]);
-	public static readonly blackKeyNameParents: ReadonlyArray<number> = [-1, 1, -1, 1, -1, 1, -1, -1, 1, -1, 1, -1];
+	// public static readonly blackKeyNameParents: ReadonlyArray<number> = [-1, 1, -1, 1, -1, 1, -1, -1, 1, -1, 1, -1]; // key relic (TODO)
+	public static readonly blackKeyNameParents: ReadonlyArray<number> = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
 	public static readonly tempoMin: number = 16;
 	public static readonly tempoMax: number = 512;
 	public static readonly reverbRange: number = 32;
@@ -208,8 +209,11 @@ export class Config {
 	public static readonly ticksPerArpeggio: number = 3;
 	public static readonly arpeggioPatterns: ReadonlyArray<ReadonlyArray<number>> = [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4, 5, 6, 7]];
 	public static readonly rhythms: DictionaryArray<Rhythm> = toNameMap([
+		{ name: "÷1 (simplets '_')", stepsPerBeat: 3, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: [/*0*/ 5, /*8*/ 12, /*16*/ 18 /*24*/] },
+		{ name: "÷2 (duplets)", stepsPerBeat: 3, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: [/*0*/ 5, /*8*/ 12, /*16*/ 18 /*24*/] },
 		{ name: "÷3 (triplets)", stepsPerBeat: 3, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: [/*0*/ 5, /*8*/ 12, /*16*/ 18 /*24*/] },
 		{ name: "÷4 (standard)", stepsPerBeat: 4, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: [/*0*/ 3, /*6*/ 9, /*12*/ 17, /*18*/ 21 /*24*/] },
+		{ name: "÷5", stepsPerBeat: 5, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
 		{ name: "÷6", stepsPerBeat: 6, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
 		{ name: "÷8", stepsPerBeat: 8, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
 		{ name: "÷9", stepsPerBeat: 9, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },

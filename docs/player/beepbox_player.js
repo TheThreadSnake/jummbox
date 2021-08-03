@@ -52,20 +52,20 @@ var beepbox = (function (exports) {
         { name: "Hexatonic", realName: "hexatonic", flags: [true, false, false, true, true, false, false, true, true, false, false, true] },
     ]);
     Config.keys = toNameMap([
-        { name: "C", isWhiteKey: true, basePitch: 12 },
-        { name: "C♯", isWhiteKey: false, basePitch: 13 },
-        { name: "D", isWhiteKey: true, basePitch: 14 },
-        { name: "D♯", isWhiteKey: false, basePitch: 15 },
-        { name: "E", isWhiteKey: true, basePitch: 16 },
-        { name: "F", isWhiteKey: true, basePitch: 17 },
-        { name: "F♯", isWhiteKey: false, basePitch: 18 },
-        { name: "G", isWhiteKey: true, basePitch: 19 },
-        { name: "G♯", isWhiteKey: false, basePitch: 20 },
-        { name: "A", isWhiteKey: true, basePitch: 21 },
-        { name: "A♯", isWhiteKey: false, basePitch: 22 },
-        { name: "B", isWhiteKey: true, basePitch: 23 },
+        { name: "0", isWhiteKey: true, basePitch: 0 },
+        { name: "1", isWhiteKey: false, basePitch: 1 },
+        { name: "2", isWhiteKey: true, basePitch: 2 },
+        { name: "3", isWhiteKey: false, basePitch: 3 },
+        { name: "4", isWhiteKey: true, basePitch: 4 },
+        { name: "5", isWhiteKey: true, basePitch: 5 },
+        { name: "6", isWhiteKey: false, basePitch: 6 },
+        { name: "7", isWhiteKey: true, basePitch: 7 },
+        { name: "8", isWhiteKey: false, basePitch: 8 },
+        { name: "9", isWhiteKey: true, basePitch: 9 },
+        { name: "A", isWhiteKey: false, basePitch: 10 },
+        { name: "B", isWhiteKey: true, basePitch: 11 },
     ]);
-    Config.blackKeyNameParents = [-1, 1, -1, 1, -1, 1, -1, -1, 1, -1, 1, -1];
+    Config.blackKeyNameParents = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
     Config.tempoMin = 16;
     Config.tempoMax = 512;
     Config.reverbRange = 32;
@@ -80,8 +80,11 @@ var beepbox = (function (exports) {
     Config.ticksPerArpeggio = 3;
     Config.arpeggioPatterns = [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4, 5, 6, 7]];
     Config.rhythms = toNameMap([
+        { name: "÷1 (simplets '_')", stepsPerBeat: 3, roundUpThresholds: [5, 12, 18] },
+        { name: "÷2 (duplets)", stepsPerBeat: 3, roundUpThresholds: [5, 12, 18] },
         { name: "÷3 (triplets)", stepsPerBeat: 3, roundUpThresholds: [5, 12, 18] },
         { name: "÷4 (standard)", stepsPerBeat: 4, roundUpThresholds: [3, 9, 17, 21] },
+        { name: "÷5", stepsPerBeat: 5, roundUpThresholds: null },
         { name: "÷6", stepsPerBeat: 6, roundUpThresholds: null },
         { name: "÷8", stepsPerBeat: 8, roundUpThresholds: null },
         { name: "÷9", stepsPerBeat: 9, roundUpThresholds: null },
@@ -4071,7 +4074,7 @@ var beepbox = (function (exports) {
             }
             buffer.push(110, base64IntToCharCode[this.pitchChannelCount], base64IntToCharCode[this.noiseChannelCount], base64IntToCharCode[this.modChannelCount]);
             buffer.push(115, base64IntToCharCode[this.scale]);
-            buffer.push(107, base64IntToCharCode[this.key]);
+            buffer.push(107, base64IntToCharCode[0]);
             buffer.push(108, base64IntToCharCode[this.loopStart >> 6], base64IntToCharCode[this.loopStart & 0x3f]);
             buffer.push(101, base64IntToCharCode[(this.loopLength - 1) >> 6], base64IntToCharCode[(this.loopLength - 1) & 0x3f]);
             buffer.push(116, base64IntToCharCode[this.tempo >> 6], base64IntToCharCode[this.tempo & 0x3F]);
@@ -4544,12 +4547,7 @@ var beepbox = (function (exports) {
                         break;
                     case 107:
                         {
-                            if (beforeSeven && variant == "beepbox") {
-                                this.key = clamp(0, Config.keys.length, 11 - base64CharCodeToInt[compressed.charCodeAt(charIndex++)]);
-                            }
-                            else {
-                                this.key = clamp(0, Config.keys.length, base64CharCodeToInt[compressed.charCodeAt(charIndex++)]);
-                            }
+                            this.key = 0;
                         }
                         break;
                     case 108:
@@ -5477,7 +5475,6 @@ var beepbox = (function (exports) {
                 "format": Song._format,
                 "version": Song._latestJummBoxVersion,
                 "scale": Config.scales[this.scale].name,
-                "key": Config.keys[this.key].name,
                 "introBars": this.loopStart,
                 "loopBars": this.loopLength,
                 "beatsPerBar": this.beatsPerBar,
@@ -5506,28 +5503,7 @@ var beepbox = (function (exports) {
                 if (scale != -1)
                     this.scale = scale;
             }
-            if (jsonObject["key"] != undefined) {
-                if (typeof (jsonObject["key"]) == "number") {
-                    this.key = ((jsonObject["key"] + 1200) >>> 0) % Config.keys.length;
-                }
-                else if (typeof (jsonObject["key"]) == "string") {
-                    const key = jsonObject["key"];
-                    const letter = key.charAt(0).toUpperCase();
-                    const symbol = key.charAt(1).toLowerCase();
-                    const letterMap = { "C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11 };
-                    const accidentalMap = { "#": 1, "♯": 1, "b": -1, "♭": -1 };
-                    let index = letterMap[letter];
-                    const offset = accidentalMap[symbol];
-                    if (index != undefined) {
-                        if (offset != undefined)
-                            index += offset;
-                        if (index < 0)
-                            index += 12;
-                        index = index % 12;
-                        this.key = index;
-                    }
-                }
-            }
+            this.key = 0;
             if (jsonObject["beatsPerMinute"] != undefined) {
                 this.tempo = clamp(Config.tempoMin, Config.tempoMax + 1, jsonObject["beatsPerMinute"] | 0);
             }
@@ -7304,7 +7280,7 @@ var beepbox = (function (exports) {
                     baseVolume = 0.6;
                 }
                 else {
-                    basePitch = Config.keys[song.key].basePitch;
+                    basePitch = 0;
                     baseVolume = 0.3;
                 }
                 volumeReferencePitch = Config.spectrumBasePitch;
@@ -7323,25 +7299,25 @@ var beepbox = (function (exports) {
                 pitchDamping = Config.chipNoises[instrument.chipNoise].isSoft ? 24.0 : 60.0;
             }
             else if (instrument.type == 1) {
-                basePitch = Config.keys[song.key].basePitch;
+                basePitch = 0;
                 baseVolume = 0.03;
                 volumeReferencePitch = 16;
                 pitchDamping = 48;
             }
             else if (instrument.type == 0 || instrument.type == 7) {
-                basePitch = Config.keys[song.key].basePitch;
+                basePitch = 0;
                 baseVolume = 0.03375;
                 volumeReferencePitch = 16;
                 pitchDamping = 48;
             }
             else if (instrument.type == 5) {
-                basePitch = Config.keys[song.key].basePitch;
+                basePitch = 0;
                 baseVolume = 0.025;
                 volumeReferencePitch = 16;
                 pitchDamping = 48;
             }
             else if (instrument.type == 6) {
-                basePitch = Config.keys[song.key].basePitch;
+                basePitch = 0;
                 baseVolume = 0.04725;
                 volumeReferencePitch = 16;
                 pitchDamping = 48;
