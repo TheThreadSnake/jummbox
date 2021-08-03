@@ -277,11 +277,11 @@ var beepbox = (function (exports) {
     Config.modChannelCountMin = 0;
     Config.modChannelCountMax = 8;
     Config.noiseInterval = 6;
-    Config.centerFrequency = 425.855;
-    Config.pitchesPerOctave = 31;
+    Config.centerFrequency = 425.854656;
+    Config.pitchesPerOctave = 19;
     Config.drumCount = 12;
     Config.modCount = 6;
-    Config.pitchOctaves = 8;
+    Config.pitchOctaves = 9;
     Config.maxScrollableOctaves = 5;
     Config.maxPitch = Config.pitchOctaves * Config.pitchesPerOctave;
     Config.maximumTonesPerChannel = Config.maxChordSize * 2;
@@ -4918,10 +4918,10 @@ li.select2-results__option[role=group] > strong:hover {
             }
         }
         static frequencyFromPitch(pitch) {
-            return Config.centerFrequency * Math.pow(2.0, (pitch - 69.0) / Config.pitchesPerOctave);
+            return Config.centerFrequency * Math.pow(2.0, pitch / Config.pitchesPerOctave - Math.round(Config.pitchOctaves / 2));
         }
         static drumsetIndexReferenceDelta(index) {
-            return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * 6) / 44100;
+            return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * (Config.pitchOctaves * Config.pitchesPerOctave - Config.spectrumBasePitch) / Config.drumCount) / 44100;
         }
         static _drumsetIndexToSpectrumOctave(index) {
             return 15 + Math.log(Instrument.drumsetIndexReferenceDelta(index)) / Math.LN2;
@@ -20030,7 +20030,7 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
                 this._volumeBarBox.style.display = this._doc.displayVolumeBar ? "" : "none";
                 if (this._doc.getFullScreen()) {
                     const semitoneHeight = this._patternEditorRow.clientHeight / this._doc.windowPitchCount;
-                    const targetBeatWidth = semitoneHeight * 5;
+                    const targetBeatWidth = semitoneHeight * Config.pitchesPerOctave * 5 / 12;
                     const minBeatWidth = this._patternEditorRow.clientWidth / (this._doc.song.beatsPerBar * 3);
                     const maxBeatWidth = this._patternEditorRow.clientWidth / (this._doc.song.beatsPerBar + 2);
                     const beatWidth = Math.max(minBeatWidth, Math.min(maxBeatWidth, targetBeatWidth));

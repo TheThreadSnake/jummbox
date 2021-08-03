@@ -1,8 +1,11 @@
 
 √	make shift + - move an octave instead of 12 notes
+√	Investigate calculation for how much of the surrounding bars are shown
+√	Investigate calculation for what the lowest octave should be
+	Investigate what the heck drumsetIndexReferenceDelta and _drumsetIndexToSpectrumOctave do
 	make the piano play the right notes
 	add edo customisation in-app
-	figure out how scales will work
+√	figure out how scales will work: There will be custom user-defined scales instead of harcoded list of scales
 	the piano is squished for high edos
 
 

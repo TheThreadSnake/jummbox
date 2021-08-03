@@ -1288,14 +1288,17 @@ export class Instrument {
 	}
 
 	public static frequencyFromPitch(pitch: number): number {
-		return Config.centerFrequency * Math.pow(2.0, (pitch - 69.0) / Config.pitchesPerOctave);
+		// the pitch relative to 1, then offset by half number of octaves, so that center frequency is in the center.
+		return Config.centerFrequency * Math.pow(2.0, pitch / Config.pitchesPerOctave - Math.round(Config.pitchOctaves/2) );
 	}
 
 	public static drumsetIndexReferenceDelta(index: number): number {
-		return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * 6) / 44100;
+		// 44100 is common sampling frequency, 6 is the drum spacing interval needed to span from the spectrum Base Pitch to the max pitch (I think at least)
+		return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * (Config.pitchOctaves * Config.pitchesPerOctave - Config.spectrumBasePitch) / Config.drumCount) / 44100;
 	}
 
 	private static _drumsetIndexToSpectrumOctave(index: number) {
+		// 15 + (a negative (drumsetIndexReferenceDelta is less than 2^0)), I have no idea what 15 means here.
 		return 15 + Math.log(Instrument.drumsetIndexReferenceDelta(index)) / Math.LN2;
 	}
 
@@ -6541,7 +6544,7 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
 
 	private static drumsetSynth(synth: Synth, data: Float32Array, stereoBufferIndex: number, stereoBufferLength: number, runLength: number, tone: Tone, instrument: Instrument): void {
 		let wave: Float32Array = instrument.getDrumsetWave(tone.drumsetPitch);
-		let phaseDelta: number = tone.phaseDeltas[0] / Instrument.drumsetIndexReferenceDelta(tone.drumsetPitch);;
+		let phaseDelta: number = tone.phaseDeltas[0] / Instrument.drumsetIndexReferenceDelta(tone.drumsetPitch);
 		const phaseDeltaScale: number = +tone.phaseDeltaScale;
 		let volume: number = +tone.volumeStart;
 		const volumeDelta: number = +tone.volumeDelta;

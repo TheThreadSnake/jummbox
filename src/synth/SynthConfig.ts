@@ -412,11 +412,11 @@ export class Config {
 	public static readonly modChannelCountMin: number = 0;
 	public static readonly modChannelCountMax: number = 8;
 	public static readonly noiseInterval: number = 6;
-	public static readonly centerFrequency = 425.855
-	public static readonly pitchesPerOctave: number = 31;
+	public static readonly centerFrequency = 425.854656
+	public static readonly pitchesPerOctave: number = 19;
 	public static readonly drumCount: number = 12;
 	public static readonly modCount: number = 6;
-	public static readonly pitchOctaves: number = 8;
+	public static readonly pitchOctaves: number = 9; // prev 8
 	public static readonly maxScrollableOctaves: number = 5; // Largest number possible with any config setting
 	public static readonly maxPitch: number = Config.pitchOctaves * Config.pitchesPerOctave;
 	public static readonly maximumTonesPerChannel: number = Config.maxChordSize * 2;
