@@ -8,6 +8,7 @@
 √	figure out how scales will work: There will be custom user-defined scales instead of harcoded list of scales
 	the piano is squished for high edos
 √	yummy discord webhooks
+	testing...
 
 
 
