@@ -810,6 +810,20 @@ export class ChangePatternNumbers extends Change {
 	}
 }
 
+export class ChangeEdo extends Change {
+	constructor(doc: SongDocument, newValue: number) {
+		super();
+		if (doc.song.edo != newValue) {
+			doc.song.edo = newValue;
+			doc.song.maxPitch = newValue * Config.pitchOctaves;
+			
+			doc.notifier.changed();
+
+			this._didSomething();
+		}
+	}
+}
+
 export class ChangeBarCount extends Change {
 	constructor(doc: SongDocument, newValue: number, atBeginning: boolean) {
 		super();
@@ -2634,15 +2648,15 @@ class ChangeTransposeNote extends UndoableChange {
 		// Can't transpose mods
 		if (doc.song.getChannelIsMod(doc.channel)) return;
 
-		const maxPitch: number = (isNoise ? Config.drumCount - 1 : Config.maxPitch);
+		const maxPitch: number = (isNoise ? Config.drumCount - 1 : doc.song.maxPitch);
 
 		for (let i: number = 0; i < this._oldPitches.length; i++) {
 			let pitch: number = this._oldPitches[i];
 			if (octave && !isNoise) {
 				if (upward) {
-					pitch = Math.min(maxPitch, pitch + Config.pitchesPerOctave);
+					pitch = Math.min(maxPitch, pitch + doc.song.edo);
 				} else {
-					pitch = Math.max(0, pitch - Config.pitchesPerOctave);
+					pitch = Math.max(0, pitch - doc.song.edo);
 				}
 			} else {
 				if (upward) {
@@ -2690,9 +2704,9 @@ class ChangeTransposeNote extends UndoableChange {
 			if (interval > max) interval = max;
 			if (octave && !isNoise) {
 				if (upward) {
-					interval = Math.min(max, interval + Config.pitchesPerOctave);
+					interval = Math.min(max, interval + doc.song.edo);
 				} else {
-					interval = Math.max(min, interval - Config.pitchesPerOctave);
+					interval = Math.max(min, interval - doc.song.edo);
 				}
 			} else {
 				if (upward) {
@@ -2919,7 +2933,7 @@ export class ChangePatternScale extends Change {
 		if (doc.selection.patternSelectionActive) {
 			new ChangeSplitNotesAtSelection(doc, pattern);
 		}
-		const maxPitch: number = Config.maxPitch;
+		const maxPitch: number = doc.song.maxPitch;
 		for (const note of pattern.notes) {
 			if (doc.selection.patternSelectionActive && (note.end <= doc.selection.patternSelectionStart || note.start >= doc.selection.patternSelectionEnd)) {
 				continue;

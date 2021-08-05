@@ -4,7 +4,8 @@
 import { Channel, Instrument, ModSetting, ModStatus, Pattern } from "../synth/synth";
 import { Config, InstrumentType } from "../synth/SynthConfig";
 import { BarScrollBar } from "./BarScrollBar";
-import { BeatsPerBarPrompt } from "./BeatsPerBarPrompt";
+import { SongSettingsPrompt } from "./SongSettingsPrompt";
+// import { BeatsPerBarPrompt } from "./BeatsPerBarPrompt";
 import { Change, ChangeGroup } from "./Change";
 import { ChangeAlgorithm, ChangeChannelBar, ChangeChipWave, ChangeChannelOrder, ChangeChord, ChangeCustomWave, ChangeDetectKey, ChangeDetune, ChangeDrumsetEnvelope, ChangeEffects, ChangeFeedbackAmplitude, ChangeFeedbackEnvelope, ChangeFeedbackType, ChangeFilterCutoff, ChangeFilterEnvelope, ChangeFilterResonance, ChangeInterval, ChangeKey, ChangeNoiseWave, ChangeOperatorAmplitude, ChangeOperatorEnvelope, ChangeOperatorFrequency, ChangePan, ChangePasteInstrument, ChangePatternNumbers, ChangePatternsPerChannel, ChangePreset, ChangePulseEnvelope, ChangePulseWidth, ChangeRandomGeneratedInstrument, ChangeReverb, ChangeRhythm, ChangeScale, ChangeSong, ChangeSongTitle, ChangeTempo, ChangeTransition, ChangeVibrato, ChangeVibratoType, ChangeVolume, ChangeVibratoDepth, ChangeVibratoSpeed, ChangeVibratoDelay, ChangePanDelay, ChangeArpeggioSpeed, pickRandomPresetValue, ChangeFastTwoNoteArp, ChangeClicklessTransition, ChangeTieNoteTransition, ChangePatternSelection } from "./changes";
 import { ChannelSettingsPrompt } from "./ChannelSettingsPrompt";
@@ -26,7 +27,7 @@ import { PatternEditor } from "./PatternEditor";
 import { Piano } from "./Piano";
 import { Prompt } from "./Prompt";
 import { SongDocument } from "./SongDocument";
-import { SongDurationPrompt } from "./SongDurationPrompt";
+// import { SongDurationPrompt } from "./SongDurationPrompt";
 import { SongRecoveryPrompt } from "./SongRecoveryPrompt";
 import { SpectrumEditor } from "./SpectrumEditor";
 import { ThemePrompt } from "./ThemePrompt";
@@ -349,8 +350,9 @@ export class SongEditor {
 		option({ value: "transposeUp" }, "Move Notes Up (+)"),
 		option({ value: "transposeDown" }, "Move Notes Down (-)"),
 		option({ value: "moveNotesSideways" }, "Move All Notes Sideways... (W)"),
-		option({ value: "beatsPerBar" }, "Change Beats Per Bar..."),
-		option({ value: "barCount" }, "Change Song Length... (L)"),
+		option({ value: "songSettings" }, "Song Settings... (O)"),
+		// option({ value: "beatsPerBar" }, "Change Beats Per Bar..."),
+		// option({ value: "barCount" }, "Change Song Length... (L)"),
 		option({ value: "channelSettings" }, "Channel Settings... (Q)"),
 		option({ value: "limiterSettings" }, "Limiter Settings... (⇧L)"),
 	);
@@ -636,13 +638,13 @@ export class SongEditor {
 								this._usedInstrumentIndicator,
 							),
 						),
-						"Song Settings"
+						"General Settings"
 					),
 				),
-				div({ class: "selectRow" },
-					span({ class: "tip", onclick: () => this._openPrompt("scale") }, "Scale: "),
-					div({ class: "selectContainer" }, this._scaleSelect),
-				),
+				// div({ class: "selectRow" },
+				// 	span({ class: "tip", onclick: () => this._openPrompt("scale") }, "Scale: "),
+				// 	div({ class: "selectContainer" }, this._scaleSelect),
+				// ),
 				div({ class: "selectRow" },
 					span({ class: "tip", onclick: () => this._openPrompt("key") }, "Key: "),
 					div({ class: "selectContainer" }, this._keySelect),
@@ -1130,12 +1132,15 @@ export class SongEditor {
 				case "songRecovery":
 					this.prompt = new SongRecoveryPrompt(this._doc);
 					break;
-				case "barCount":
-					this.prompt = new SongDurationPrompt(this._doc);
+				case "songSettings":
+					this.prompt = new SongSettingsPrompt(this._doc);
 					break;
-				case "beatsPerBar":
-					this.prompt = new BeatsPerBarPrompt(this._doc);
-					break;
+				// case "barCount":
+				// 	this.prompt = new SongDurationPrompt(this._doc);
+				// 	break;
+				// case "beatsPerBar":
+				// 	this.prompt = new BeatsPerBarPrompt(this._doc);
+				// 	break;
 				case "moveNotesSideways":
 					this.prompt = new MoveNotesSidewaysPrompt(this._doc);
 					break;
@@ -1203,7 +1208,7 @@ export class SongEditor {
 
 		if (this._doc.getFullScreen()) {
 			const semitoneHeight: number = this._patternEditorRow.clientHeight / this._doc.windowPitchCount;
-			const targetBeatWidth: number = semitoneHeight * Config.pitchesPerOctave * 5/12;
+			const targetBeatWidth: number = semitoneHeight * this._doc.song.edo * 5/12;
 			const minBeatWidth: number = this._patternEditorRow.clientWidth / (this._doc.song.beatsPerBar * 3);
 			const maxBeatWidth: number = this._patternEditorRow.clientWidth / (this._doc.song.beatsPerBar + 2);
 			const beatWidth: number = Math.max(minBeatWidth, Math.min(maxBeatWidth, targetBeatWidth));
@@ -2168,9 +2173,9 @@ export class SongEditor {
 				if (event.shiftKey) {
 					this._openPrompt("limiterSettings");
 				}
-				else {
-					this._openPrompt("barCount");
-				}
+				// else {
+					// this._openPrompt("barCount");
+				// }
 				break;
 			case 77: // m
 				if (this._doc.enableChannelMuting) {
@@ -2276,6 +2281,9 @@ export class SongEditor {
 				}
 				event.preventDefault();
 
+				break;
+			case 79: // o
+				this._openPrompt("songSettings");
 				break;
 			case 219: // left brace
 				this._doc.synth.prevBar();
@@ -2788,12 +2796,15 @@ export class SongEditor {
 			case "duplicatePatterns":
 				this._doc.selection.duplicatePatterns();
 				break;
-			case "barCount":
-				this._openPrompt("barCount");
+			case "songSettings":
+				this._openPrompt("songSettings");
 				break;
-			case "beatsPerBar":
-				this._openPrompt("beatsPerBar");
-				break;
+			// case "barCount":
+			// 	this._openPrompt("barCount");
+			// 	break;
+			// case "beatsPerBar":
+			// 	this._openPrompt("beatsPerBar");
+			// 	break;
 			case "moveNotesSideways":
 				this._openPrompt("moveNotesSideways");
 				break;

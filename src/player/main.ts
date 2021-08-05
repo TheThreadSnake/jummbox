@@ -422,7 +422,7 @@ function renderTimeline(): void {
 	} else {
 		timelineWidth = boundingRect.width;
 		const targetSemitoneHeight: number = Math.max(1, timelineWidth / (synth.song.barCount * synth.song.beatsPerBar) / 6.0);
-		timelineHeight = Math.min(boundingRect.height, targetSemitoneHeight * (Config.maxPitch + 1) + 1);
+		timelineHeight = Math.min(boundingRect.height, targetSemitoneHeight * (synth.song.maxPitch + 1) + 1);
 		windowOctaves = Math.max(3, Math.min(Config.pitchOctaves, Math.round(timelineHeight / (12 * targetSemitoneHeight))));
 		windowPitchCount = windowOctaves * 12 + 1;
 	}

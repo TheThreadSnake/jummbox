@@ -142,6 +142,7 @@ const enum SongTagCode {
 	channelNames = CharCode.U,
 	feedbackEnvelope = CharCode.V,
 	pulseWidth = CharCode.W,
+	edo = CharCode.X,
 }
 
 const base64IntToCharCode: ReadonlyArray<number> = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 45, 95];
@@ -1287,17 +1288,18 @@ export class Instrument {
 		}
 	}
 
-	public static frequencyFromPitch(pitch: number): number {
+	public static frequencyFromPitch(pitch: number, _centerFeq: number, _edo: number): number {
 		// the pitch relative to 1, then offset by half number of octaves, so that center frequency is in the center.
-		return Config.centerFrequency * Math.pow(2.0, pitch / Config.pitchesPerOctave - Math.round(Config.pitchOctaves/2) );
+		return _centerFeq * Math.pow(2.0, pitch / _edo - Math.round(Config.pitchOctaves/2) );
 	}
 
-	public static drumsetIndexReferenceDelta(index: number): number {
+	public static drumsetIndexReferenceDelta(index: number): number { // this pretends that the song is 440hz 12edo for now
 		// 44100 is common sampling frequency, 6 is the drum spacing interval needed to span from the spectrum Base Pitch to the max pitch (I think at least)
-		return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * (Config.pitchOctaves * Config.pitchesPerOctave - Config.spectrumBasePitch) / Config.drumCount) / 44100;
+		// return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * (Config.pitchOctaves * _edo - Config.spectrumBasePitch) / Config.drumCount, 440, 12) / 44100;
+		return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * (8 * 12 - Config.spectrumBasePitch) / Config.drumCount, 440, 12) / 44100;
 	}
 
-	private static _drumsetIndexToSpectrumOctave(index: number) {
+	private static _drumsetIndexToSpectrumOctave(index: number) { // this pretends that the song is 440hz 12edo for now
 		// 15 + (a negative (drumsetIndexReferenceDelta is less than 2^0)), I have no idea what 15 means here.
 		return 15 + Math.log(Instrument.drumsetIndexReferenceDelta(index)) / Math.LN2;
 	}
@@ -1329,7 +1331,7 @@ export class Instrument {
 		}
 	}
 
-	public getDrumsetWave(pitch: number): Float32Array {
+	public getDrumsetWave(pitch: number, edo: number): Float32Array {
 		if (this.type == InstrumentType.drumset) {
 			return this.drumsetSpectrumWaves[pitch].getCustomWave(Instrument._drumsetIndexToSpectrumOctave(pitch));
 		} else {
@@ -1412,14 +1414,20 @@ export class Song {
 	private static readonly _latestBeepboxVersion: number = 8;
 	private static readonly _oldestJummBoxVersion: number = 1;
 	private static readonly _latestJummBoxVersion: number = 4;
+	// private static readonly _oldestMicroBoxVersion: number = 0;
+	// private static readonly _latestMicroBoxVersion: number = 0;
 	// One-character variant detection at the start of URL to distinguish variants such as JummBox.
-	private static readonly _variant = 0x6A; //"j" ~ jummbox
+	private static readonly _variant = 0x6A; // "j" ~ jummbox
+	// private static readonly _variant = 0x6D; // "m" ~ microbox
 
 	public title: string;
 	public scale: number;
-	public key: number;
+	public key: number; // this is fequency offset for different edos
 	public tempo: number;
 	public reverb: number;
+	public centerFrequency: number;
+	public edo: number;
+	public maxPitch: number;
 	public beatsPerBar: number;
 	public barCount: number;
 	public patternsPerChannel: number;
@@ -1663,15 +1671,18 @@ export class Song {
 		this.key = 0;
 		this.loopStart = 0;
 		this.loopLength = 4;
-		this.tempo = 150;
+		this.tempo = 100;
 		this.reverb = 0;
-		this.beatsPerBar = 8;
+		this.centerFrequency = 425.85465642512778279; // very specific :}
+		this.edo = 12;
+		this.maxPitch = this.edo * Config.pitchOctaves;
+		this.beatsPerBar = 6;
 		this.barCount = 16;
-		this.patternsPerChannel = 8;
-		this.rhythm = 1;
-		this.instrumentsPerChannel = 1;
+		this.patternsPerChannel = 16;
+		this.rhythm = 3; // div4 standard
+		this.instrumentsPerChannel = 2;
 
-		this.title = "Unnamed";
+		this.title = "Name Me!";
 		document.title = EditorConfig.versionDisplayName;
 
 		if (andResetChannels) {
@@ -1717,8 +1728,9 @@ export class Song {
 		let bits: BitFieldWriter;
 		let buffer: number[] = [];
 
-		buffer.push(Song._variant);
+		buffer.push(Song._variant); // TODO: Replace _variant Jummbox with variant Microbox
 		buffer.push(base64IntToCharCode[Song._latestJummBoxVersion]);
+		// buffer.push(base64IntToCharCode[Song._latestMicroBoxVersion]);
 
 		buffer.push(SongTagCode.songTitle);
 
@@ -1739,6 +1751,7 @@ export class Song {
 		buffer.push(SongTagCode.loopEnd, base64IntToCharCode[(this.loopLength - 1) >> 6], base64IntToCharCode[(this.loopLength - 1) & 0x3f]);
 		buffer.push(SongTagCode.tempo, base64IntToCharCode[this.tempo >> 6], base64IntToCharCode[this.tempo & 0x3F]);
 		buffer.push(SongTagCode.reverb, base64IntToCharCode[this.reverb]);
+		buffer.push(SongTagCode.edo, base64IntToCharCode[this.edo]);
 		buffer.push(SongTagCode.beatCount, base64IntToCharCode[this.beatsPerBar - 1]);
 		buffer.push(SongTagCode.barCount, base64IntToCharCode[(this.barCount - 1) >> 6], base64IntToCharCode[(this.barCount - 1) & 0x3f]);
 		buffer.push(SongTagCode.patternCount, base64IntToCharCode[(this.patternsPerChannel - 1) >> 6], base64IntToCharCode[(this.patternsPerChannel - 1) & 0x3f]);
@@ -2006,8 +2019,8 @@ export class Song {
 				}
 			}
 
-			const octaveOffset: number = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * Config.pitchesPerOctave;
-			let lastPitch: number = ((isNoiseChannel || isModChannel) ? 4 : Config.pitchesPerOctave) + octaveOffset;
+			const octaveOffset: number = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * this.edo;
+			let lastPitch: number = ((isNoiseChannel || isModChannel) ? 4 : this.edo) + octaveOffset;
 			const recentPitches: number[] = isModChannel ? [0, 1, 2, 3, 4, 5] : (isNoiseChannel ? [4, 6, 7, 2, 3, 8, 0, 10] : [12, 19, 24, 31, 36, 7, 0]);
 			const recentShapes: any[] = [];
 
@@ -2192,11 +2205,17 @@ export class Song {
 			variant = "jummbox";
 			charIndex++;
 		}
+		// if (variantTest == 0x6D) { //"m"
+		// 	variant = "microbox";
+		// 	charIndex++;
+		// }
 
 		const version: number = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
 
 		if (variant == "beepbox" && (version == -1 || version > Song._latestBeepboxVersion || version < Song._oldestBeepboxVersion)) return;
 		if (variant == "jummbox" && (version == -1 || version > Song._latestJummBoxVersion || version < Song._oldestJummBoxVersion)) return;
+		// if (variant == "microbox" && (version == -1 || version > Song._latestMicroBoxVersion || version < Song._oldestMicroBoxVersion)) return;
+
 
 		const beforeTwo: boolean = version < 2;
 		const beforeThree: boolean = version < 3;
@@ -2294,6 +2313,14 @@ export class Song {
 				else {
 					this.reverb = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
 					this.reverb = clamp(0, Config.reverbRange, this.reverb);
+				}
+			} break;
+			case SongTagCode.edo: {
+				if (beforeEight && ( variant == "beepbox" || variant == "jummbox")) {
+					this.edo = 12;
+					charIndex++;
+				} else {
+					this.edo = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
 				}
 			} break;
 			case SongTagCode.beatCount: {
@@ -2878,10 +2905,10 @@ export class Song {
 						}
 					}
 
-					const octaveOffset: number = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * Config.pitchesPerOctave;
+					const octaveOffset: number = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * this.edo;
 					let note: Note | null = null;
 					let pin: NotePin | null = null;
-					let lastPitch: number = ((isNoiseChannel || isModChannel) ? 4 : Config.pitchesPerOctave) + octaveOffset;
+					let lastPitch: number = ((isNoiseChannel || isModChannel) ? 4 : this.edo) + octaveOffset;
 					const recentPitches: number[] = isModChannel ? [0, 1, 2, 3, 4, 5] : (isNoiseChannel ? [4, 6, 7, 2, 3, 8, 0, 10] : [12, 19, 24, 31, 36, 7, 0]);
 					const recentShapes: any[] = [];
 					for (let i: number = 0; i < recentPitches.length; i++) {
@@ -3350,7 +3377,7 @@ export class Song {
 
 							note.end = note.pins[note.pins.length - 1].time + note.start;
 
-							const maxPitch: number = isNoiseChannel ? Config.drumCount - 1 : Config.maxPitch;
+							const maxPitch: number = isNoiseChannel ? Config.drumCount - 1 : this.maxPitch;
 							let lowestPitch: number = maxPitch;
 							let highestPitch: number = 0;
 							for (let k: number = 0; k < note.pitches.length; k++) {
@@ -4811,7 +4838,7 @@ export class Synth {
 		// Performance measurements:
 		samplesAccumulated += outputBufferLength;
 		samplePerformance += synthDuration;
-		
+
 		if (samplesAccumulated >= 44100 * 4) {
 		const secondsGenerated = samplesAccumulated / 44100;
 		const secondsRequired = samplePerformance / 1000;
@@ -5666,7 +5693,7 @@ export class Synth {
 				const freqMult = Config.operatorFrequencies[instrument.operators[i].frequency].mult;
 				const interval = Config.operatorCarrierInterval[associatedCarrierIndex] + arpeggioInterval;
 				const startPitch: number = basePitch + (pitch + intervalStart + detuneStart) * intervalScale + interval;
-				const startFreq: number = freqMult * (Instrument.frequencyFromPitch(startPitch)) + Config.operatorFrequencies[instrument.operators[i].frequency].hzOffset;
+				const startFreq: number = freqMult * (Instrument.frequencyFromPitch(startPitch, song.centerFrequency, song.edo)) + Config.operatorFrequencies[instrument.operators[i].frequency].hzOffset;
 
 				tone.phaseDeltas[i] = startFreq * sampleTime * Config.sineWaveLength;
 
@@ -5781,7 +5808,7 @@ export class Synth {
 				const arpeggio: number = Math.floor(instrument.arpTime / Config.ticksPerArpeggio);
 				if (chord.harmonizes) {
 					const intervalOffset: number = tone.pitches[1 + getArpeggioPitchIndex(tone.pitchCount - 1, instrument.fastTwoNoteArp, arpeggio)] - tone.pitches[0];
-					tone.intervalMult = Math.pow(2.0, intervalOffset / Config.pitchesPerOctave);
+					tone.intervalMult = Math.pow(2.0, intervalOffset / song.edo);
 					tone.intervalVolumeMult = Math.pow(2.0, -intervalOffset / pitchDamping);
 				} else {
 					pitch = tone.pitches[getArpeggioPitchIndex(tone.pitchCount, instrument.fastTwoNoteArp, arpeggio)];
@@ -5790,7 +5817,7 @@ export class Synth {
 
 			const startPitch: number = basePitch + (pitch + intervalStart + detuneStart) * intervalScale;
 			const endPitch: number = basePitch + (pitch + intervalEnd + detuneEnd) * intervalScale;
-			const startFreq: number = Instrument.frequencyFromPitch(startPitch);
+			const startFreq: number = Instrument.frequencyFromPitch(startPitch, song.centerFrequency, song.edo);
 			const pitchVolumeStart: number = Math.pow(2.0, -(startPitch - volumeReferencePitch) / pitchDamping);
 			const pitchVolumeEnd: number = Math.pow(2.0, -(endPitch - volumeReferencePitch) / pitchDamping);
 			let settingsVolumeMultStart: number = baseVolume * filterVolumeStart;
@@ -5852,7 +5879,7 @@ export class Synth {
 			tone.volumeDelta = (volumeEnd - tone.volumeStart) / runLength;
 		}
 
-		tone.phaseDeltaScale = Math.pow(2.0, ((intervalEnd - intervalStart) * intervalScale / Config.pitchesPerOctave) / runLength);
+		tone.phaseDeltaScale = Math.pow(2.0, ((intervalEnd - intervalStart) * intervalScale / song.edo) / runLength);
 	}
 
 	public static getLFOAmplitude(instrument: Instrument, secondsIntoBar: number): number {
@@ -5937,7 +5964,7 @@ export class Synth {
 		}
 	}
 
-	private static chipSynth(synth: Synth, data: Float32Array, stereoBufferIndex: number, stereoBufferLength: number, runLength: number, tone: Tone, instrument: Instrument): void {
+	private static chipSynth(synth: Synth, data: Float32Array, stereoBufferIndex: number, stereoBufferLength: number, runLength: number, tone: Tone, instrument: Instrument, edo: number): void {
 		var wave: Float64Array;
 		var volumeScale: number;
 
@@ -5955,8 +5982,8 @@ export class Synth {
 
 		const waveLength: number = +wave.length - 1; // The first sample is duplicated at the end, don't double-count it.
 
-		const intervalA: number = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave);
-		const intervalB: number = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave) * tone.intervalMult;
+		const intervalA: number = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / edo);
+		const intervalB: number = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / edo) * tone.intervalMult;
 		const intervalSign: number = tone.intervalVolumeMult * Config.intervals[instrument.interval].sign;
 		if (instrument.interval == 0 && !instrument.getChord().customInterval) tone.phases[1] = tone.phases[0];
 		const deltaRatio: number = intervalB / intervalA;
@@ -6073,12 +6100,12 @@ export class Synth {
 	}
 
 
-	private static harmonicsSynth(synth: Synth, data: Float32Array, stereoBufferIndex: number, stereoBufferLength: number, runLength: number, tone: Tone, instrument: Instrument): void {
+	private static harmonicsSynth(synth: Synth, data: Float32Array, stereoBufferIndex: number, stereoBufferLength: number, runLength: number, tone: Tone, instrument: Instrument, edo: number): void {
 		const wave: Float32Array = instrument.harmonicsWave.getCustomWave();
 		const waveLength: number = +wave.length - 1; // The first sample is duplicated at the end, don't double-count it.
 
-		const intervalA: number = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave);
-		const intervalB: number = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave) * tone.intervalMult;
+		const intervalA: number = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / edo);
+		const intervalB: number = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / edo) * tone.intervalMult;
 		const intervalSign: number = tone.intervalVolumeMult * Config.intervals[instrument.interval].sign;
 		if (instrument.interval == 0 && !instrument.getChord().customInterval) tone.phases[1] = tone.phases[0];
 		const deltaRatio: number = intervalB / intervalA;
@@ -6551,8 +6578,8 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
 		tone.filterSample1 = filterSample1;
 	}
 
-	private static drumsetSynth(synth: Synth, data: Float32Array, stereoBufferIndex: number, stereoBufferLength: number, runLength: number, tone: Tone, instrument: Instrument): void {
-		let wave: Float32Array = instrument.getDrumsetWave(tone.drumsetPitch);
+	private static drumsetSynth(synth: Synth, data: Float32Array, stereoBufferIndex: number, stereoBufferLength: number, runLength: number, tone: Tone, instrument: Instrument, edo: number): void {
+		let wave: Float32Array = instrument.getDrumsetWave(tone.drumsetPitch, edo);
 		let phaseDelta: number = tone.phaseDeltas[0] / Instrument.drumsetIndexReferenceDelta(tone.drumsetPitch);
 		const phaseDeltaScale: number = +tone.phaseDeltaScale;
 		let volume: number = +tone.volumeStart;

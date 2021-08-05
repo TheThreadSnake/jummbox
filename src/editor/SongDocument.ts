@@ -50,7 +50,7 @@ export class SongDocument {
 	public prompt: string | null = null;
 	public windowOctaves: number = 3 + (+(window.localStorage.getItem("extraOctaves") || "0"));
 	public scrollableOctaves: number = Config.pitchOctaves - this.windowOctaves;
-	public windowPitchCount: number = this.windowOctaves * Config.pitchesPerOctave + 1;
+	public windowPitchCount: number;
 	private static readonly _maximumUndoHistory: number = 100;
 	private _recovery: SongRecovery = new SongRecovery();
 	private _recoveryUid: string;
@@ -99,6 +99,8 @@ export class SongDocument {
 		songString = this.song.toBase64String();
 		this.synth = new Synth(this.song);
 		this.synth.volume = this._calcVolume();
+		
+		this.windowPitchCount = this.windowOctaves * this.song.edo + 1;
 
 		let state: HistoryState | null = this._getHistoryState();
 		if (state == null) {
