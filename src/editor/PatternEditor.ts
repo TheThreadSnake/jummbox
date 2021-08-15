@@ -124,7 +124,8 @@ export class PatternEditor {
 	private _followPlayheadBar: number = -1;
 
 	constructor(private _doc: SongDocument, private _interactive: boolean, private _barOffset: number) {
-		for (let i: number = 0; i < this._doc.song.edo; i++) {
+		// for (let i: number = 0; i < this._doc.song.edo; i++) {
+		for (let i: number = 0; i < Config.pitchesPerOctave; i++) {
 			const rectangle: SVGRectElement = SVG.rect();
 			rectangle.setAttribute("x", "1");
 			rectangle.setAttribute("fill", (i == 0) ? ColorConfig.tonic : ColorConfig.pitchBackground);
@@ -377,7 +378,8 @@ export class PatternEditor {
 			}
 
 			mousePitch -= interval;
-			this._cursor.pitch = this._snapToPitch(mousePitch, -minInterval, (this._doc.song.getChannelIsNoise(this._doc.channel) ? Config.drumCount - 1 : this._doc.song.maxPitch) - maxInterval);
+			// this._cursor.pitch = this._snapToPitch(mousePitch, -minInterval, (this._doc.song.getChannelIsNoise(this._doc.channel) ? Config.drumCount - 1 : this._doc.song.maxPitch) - maxInterval);
+			this._cursor.pitch = this._snapToPitch(mousePitch, -minInterval, (this._doc.song.getChannelIsNoise(this._doc.channel) ? Config.drumCount - 1 : Config.maxPitch) - maxInterval);
 
 			// Snap to nearby existing note if present.
 			if (!this._doc.song.getChannelIsNoise(this._doc.channel)) {
@@ -399,7 +401,8 @@ export class PatternEditor {
 		} else {
 			//console.log("default");
 
-			this._cursor.pitch = this._snapToPitch(mousePitch, 0, this._doc.song.maxPitch);
+			// this._cursor.pitch = this._snapToPitch(mousePitch, 0, this._doc.song.maxPitch);
+			this._cursor.pitch = this._snapToPitch(mousePitch, 0, Config.maxPitch);
 			const defaultLength: number = this._copiedPins[this._copiedPins.length - 1].time;
 			const fullBeats: number = Math.floor(this._cursor.part / Config.partsPerBeat);
 			const maxDivision: number = this._getMaxDivision();
@@ -852,7 +855,8 @@ export class PatternEditor {
 					this._doc.setProspectiveChange(this._dragChange);
 
 					const notesInScale: number = Config.scales[this._doc.song.scale].flags.filter(x => x).length;
-					const pitchRatio: number = this._doc.song.getChannelIsNoise(this._doc.channel) ? 1 : this._doc.song.edo / notesInScale;
+					// const pitchRatio: number = this._doc.song.getChannelIsNoise(this._doc.channel) ? 1 : this._doc.song.edo / notesInScale;
+					const pitchRatio: number = this._doc.song.getChannelIsNoise(this._doc.channel) ? 1 : Config.pitchesPerOctave / notesInScale;
 					const draggedParts: number = Math.round((this._mouseX - this._mouseXStart) / (this._partWidth * minDivision)) * minDivision;
 					const draggedTranspose: number = Math.round((this._mouseYStart - this._mouseY) / (this._pitchHeight * pitchRatio));
 					sequence.append(new ChangeDragSelectedNotes(this._doc, this._doc.channel, pattern, draggedParts, draggedTranspose));
@@ -1094,7 +1098,8 @@ export class PatternEditor {
 						}
 						if (bendVolume < 0) bendVolume = 0;
 						if (bendVolume > cap) bendVolume = cap;
-						bendInterval = this._snapToPitch(prevPin.interval * (1.0 - volumeRatio) + nextPin.interval * volumeRatio + this._cursor.curNote.pitches[0], 0, this._doc.song.maxPitch) - this._cursor.curNote.pitches[0];
+						// bendInterval = this._snapToPitch(prevPin.interval * (1.0 - volumeRatio) + nextPin.interval * volumeRatio + this._cursor.curNote.pitches[0], 0, this._doc.song.maxPitch) - this._cursor.curNote.pitches[0];
+						bendInterval = this._snapToPitch(prevPin.interval * (1.0 - volumeRatio) + nextPin.interval * volumeRatio + this._cursor.curNote.pitches[0], 0, Config.maxPitch) - this._cursor.curNote.pitches[0];
 						break;
 					}
 
@@ -1141,7 +1146,8 @@ export class PatternEditor {
 					maxPitch -= this._cursor.curNote.pitches[this._cursor.pitchIndex];
 
 					if (!this._doc.song.getChannelIsMod(this._doc.channel)) {
-						const bendTo: number = this._snapToPitch(this._findMousePitch(this._mouseY), -minPitch, (this._doc.song.getChannelIsNoise(this._doc.channel) ? Config.drumCount - 1 : this._doc.song.maxPitch) - maxPitch);
+						// const bendTo: number = this._snapToPitch(this._findMousePitch(this._mouseY), -minPitch, (this._doc.song.getChannelIsNoise(this._doc.channel) ? Config.drumCount - 1 : this._doc.song.maxPitch) - maxPitch);
+						const bendTo: number = this._snapToPitch(this._findMousePitch(this._mouseY), -minPitch, (this._doc.song.getChannelIsNoise(this._doc.channel) ? Config.drumCount - 1 : Config.maxPitch) - maxPitch);
 						sequence.append(new ChangePitchBend(this._doc, this._cursor.curNote, bendStart, bendEnd, bendTo, this._cursor.pitchIndex));
 						this._dragPitch = bendTo;
 					}
@@ -1329,7 +1335,8 @@ export class PatternEditor {
 		this._editorWidth = this.container.clientWidth;
 		this._editorHeight = this.container.clientHeight;
 		this._partWidth = this._editorWidth / (this._doc.song.beatsPerBar * Config.partsPerBeat);
-		this._octaveOffset = this._doc.song.channels[this._doc.channel].octave * this._doc.song.edo;
+		// this._octaveOffset = this._doc.song.channels[this._doc.channel].octave * this._doc.song.edo;
+		this._octaveOffset = this._doc.song.channels[this._doc.channel].octave * Config.pitchesPerOctave;
 
 		if (this._doc.song.getChannelIsNoise(this._doc.channel)) {
 			this._pitchBorder = 0;
@@ -1394,7 +1401,8 @@ export class PatternEditor {
 			this._renderedBeatWidth = beatWidth;
 			this._renderedPitchHeight = this._pitchHeight;
 			this._svgNoteBackground.setAttribute("width", "" + beatWidth);
-			this._svgNoteBackground.setAttribute("height", "" + (this._pitchHeight * this._doc.song.edo));
+			// this._svgNoteBackground.setAttribute("height", "" + (this._pitchHeight * this._doc.song.edo));
+			this._svgNoteBackground.setAttribute("height", "" + (this._pitchHeight * Config.pitchesPerOctave));
 			this._svgDrumBackground.setAttribute("width", "" + beatWidth);
 			this._svgDrumBackground.setAttribute("height", "" + this._pitchHeight);
 			this._svgModBackground.setAttribute("width", "" + beatWidth);
@@ -1408,10 +1416,11 @@ export class PatternEditor {
 			}
 
 
-
-			for (let j: number = 0; j < this._doc.song.edo; j++) {
+			// for (let j: number = 0; j < this._doc.song.edo; j++) {
+			for (let j: number = 0; j < Config.pitchesPerOctave; j++) {
 				const rectangle: SVGRectElement = this._backgroundPitchRows[j];
-				const y: number = (this._doc.song.edo - j) % this._doc.song.edo;
+				// const y: number = (this._doc.song.edo - j) % this._doc.song.edo;
+				const y: number = (Config.pitchesPerOctave - j) % Config.pitchesPerOctave;
 				rectangle.setAttribute("width", "" + (beatWidth - 2));
 				rectangle.setAttribute("y", "" + (y * this._pitchHeight + 1));
 				rectangle.setAttribute("height", "" + (this._pitchHeight - 2));
@@ -1428,10 +1437,12 @@ export class PatternEditor {
 
 		if (this._renderedFifths != this._doc.showFifth) {
 			this._renderedFifths = this._doc.showFifth;
-			this._backgroundPitchRows[Math.round(this._doc.song.edo * Math.log2(3 / 2))].setAttribute("fill", this._doc.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
+			// this._backgroundPitchRows[Math.round(this._doc.song.edo * Math.log2(3 / 2))].setAttribute("fill", this._doc.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
+			this._backgroundPitchRows[Math.round(Config.pitchesPerOctave * Math.log2(3 / 2))].setAttribute("fill", this._doc.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
 		}
 
-		for (let j: number = 0; j < this._doc.song.edo; j++) {
+		// for (let j: number = 0; j < this._doc.song.edo; j++) {
+		for (let j: number = 0; j < Config.pitchesPerOctave; j++) {
 
 			// this._backgroundPitchRows[j].style.visibility = Config.scales[this._doc.song.scale].flags[j] ? "visible" : "hidden";
 			this._backgroundPitchRows[j].style.visibility = "visible";
@@ -1472,7 +1483,8 @@ export class PatternEditor {
 							const notePath: SVGPathElement = SVG.path();
 							notePath.setAttribute("fill", ColorConfig.getChannelColor(this._doc.song, channel).secondaryNote);
 							notePath.setAttribute("pointer-events", "none");
-							this._drawNote(notePath, pitch, note.start, note.pins, this._pitchHeight * 0.19, false, this._doc.song.channels[channel].octave * this._doc.song.edo);
+							// this._drawNote(notePath, pitch, note.start, note.pins, this._pitchHeight * 0.19, false, this._doc.song.channels[channel].octave * this._doc.song.edo);
+							this._drawNote(notePath, pitch, note.start, note.pins, this._pitchHeight * 0.19, false, this._doc.song.channels[channel].octave * Config.pitchesPerOctave);
 							this._svgNoteContainer.appendChild(notePath);
 						}
 					}

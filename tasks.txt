@@ -10,6 +10,7 @@
 	Combine Song length and beats per bar in the same UI, add edo selection, and call it Song Settings
 	Maybe make an unstable subfolder?
 	Work on piano rendering (add edo input, idk, make it rainbow?, make less squashed)
+	(pay attention to _drawNote()?)
 
 	https://cdn.discordapp.com/attachments/723618516850311330/872142134470381618/Screen_Shot_2021-08-03_at_11.40.52_AM.png
 all the places where validateRange() (which is what the error message format is) is used in fromBase64String()

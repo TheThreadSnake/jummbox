@@ -73,11 +73,9 @@ var beepbox = (function (exports) {
     Config.beatsPerBarMax = 32;
     Config.barCountMin = 1;
     Config.barCountMax = 512;
-    Config.edoMin = 1;
-    Config.edoMax = 72;
     Config.instrumentsPerChannelMin = 1;
     Config.instrumentsPerChannelMax = 16;
-    Config.partsPerBeat = 48;
+    Config.partsPerBeat = 24;
     Config.ticksPerPart = 2;
     Config.ticksPerArpeggio = 3;
     Config.arpeggioPatterns = [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4, 5, 6, 7]];
@@ -86,8 +84,10 @@ var beepbox = (function (exports) {
         { name: "÷2 (duplets)", stepsPerBeat: 2, roundUpThresholds: [5, 12, 18] },
         { name: "÷3 (triplets)", stepsPerBeat: 3, roundUpThresholds: [5, 12, 18] },
         { name: "÷4 (standard)", stepsPerBeat: 4, roundUpThresholds: [3, 9, 17, 21] },
+        { name: "÷5", stepsPerBeat: 5, roundUpThresholds: null },
         { name: "÷6", stepsPerBeat: 6, roundUpThresholds: null },
         { name: "÷8", stepsPerBeat: 8, roundUpThresholds: null },
+        { name: "÷9", stepsPerBeat: 9, roundUpThresholds: null },
         { name: "÷12", stepsPerBeat: 12, roundUpThresholds: null },
         { name: "÷16", stepsPerBeat: 16, roundUpThresholds: null },
         { name: "÷24 (freehand)", stepsPerBeat: 24, roundUpThresholds: null },
@@ -280,10 +280,13 @@ var beepbox = (function (exports) {
     Config.modChannelCountMin = 0;
     Config.modChannelCountMax = 8;
     Config.noiseInterval = 6;
+    Config.centerFrequency = 425.854656;
+    Config.pitchesPerOctave = 19;
     Config.drumCount = 12;
     Config.modCount = 6;
     Config.pitchOctaves = 9;
     Config.maxScrollableOctaves = 5;
+    Config.maxPitch = Config.pitchOctaves * Config.pitchesPerOctave;
     Config.maximumTonesPerChannel = Config.maxChordSize * 2;
     Config.sineWaveLength = 1 << 8;
     Config.sineWaveMask = Config.sineWaveLength - 1;
@@ -500,7 +503,7 @@ var beepbox = (function (exports) {
         }
     }
     EditorConfig.version = "2.3";
-    EditorConfig.versionDisplayName = "MicroBox Alpha " + EditorConfig.version;
+    EditorConfig.versionDisplayName = "MicroBox " + EditorConfig.version;
     EditorConfig.presetCategories = toNameMap([
         {
             name: "Custom Instruments", presets: toNameMap([
@@ -2038,11 +2041,11 @@ var beepbox = (function (exports) {
                 }
             }
         }
-        static frequencyFromPitch(pitch, _centerFeq, _edo) {
-            return _centerFeq * Math.pow(2.0, pitch / _edo - Math.round(Config.pitchOctaves / 2));
+        static frequencyFromPitch(pitch) {
+            return Config.centerFrequency * Math.pow(2.0, pitch / Config.pitchesPerOctave - Math.round(Config.pitchOctaves / 2));
         }
         static drumsetIndexReferenceDelta(index) {
-            return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * (8 * 12 - Config.spectrumBasePitch) / Config.drumCount, 440, 12) / 44100;
+            return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * (Config.pitchOctaves * Config.pitchesPerOctave - Config.spectrumBasePitch) / Config.drumCount) / 44100;
         }
         static _drumsetIndexToSpectrumOctave(index) {
             return 15 + Math.log(Instrument.drumsetIndexReferenceDelta(index)) / Math.LN2;
@@ -2077,7 +2080,7 @@ var beepbox = (function (exports) {
                 throw new Error("Unhandled instrument type in getDrumWave");
             }
         }
-        getDrumsetWave(pitch, edo) {
+        getDrumsetWave(pitch) {
             if (this.type == 4) {
                 return this.drumsetSpectrumWaves[pitch].getCustomWave(Instrument._drumsetIndexToSpectrumOctave(pitch));
             }
@@ -2360,17 +2363,14 @@ var beepbox = (function (exports) {
             this.key = 0;
             this.loopStart = 0;
             this.loopLength = 4;
-            this.tempo = 100;
+            this.tempo = 150;
             this.reverb = 0;
-            this.centerFrequency = 425.85465642512778279;
-            this.edo = 12;
-            this.maxPitch = this.edo * Config.pitchOctaves;
-            this.beatsPerBar = 6;
+            this.beatsPerBar = 8;
             this.barCount = 16;
-            this.patternsPerChannel = 16;
-            this.rhythm = 3;
-            this.instrumentsPerChannel = 2;
-            this.title = "Name Me!";
+            this.patternsPerChannel = 8;
+            this.rhythm = 1;
+            this.instrumentsPerChannel = 1;
+            this.title = "Unnamed";
             document.title = EditorConfig.versionDisplayName;
             if (andResetChannels) {
                 this.pitchChannelCount = 3;
@@ -2426,7 +2426,6 @@ var beepbox = (function (exports) {
             buffer.push(101, base64IntToCharCode[(this.loopLength - 1) >> 6], base64IntToCharCode[(this.loopLength - 1) & 0x3f]);
             buffer.push(116, base64IntToCharCode[this.tempo >> 6], base64IntToCharCode[this.tempo & 0x3F]);
             buffer.push(109, base64IntToCharCode[this.reverb]);
-            buffer.push(88, base64IntToCharCode[this.edo]);
             buffer.push(97, base64IntToCharCode[this.beatsPerBar - 1]);
             buffer.push(103, base64IntToCharCode[(this.barCount - 1) >> 6], base64IntToCharCode[(this.barCount - 1) & 0x3f]);
             buffer.push(106, base64IntToCharCode[(this.patternsPerChannel - 1) >> 6], base64IntToCharCode[(this.patternsPerChannel - 1) & 0x3f]);
@@ -2661,8 +2660,8 @@ var beepbox = (function (exports) {
                         }
                     }
                 }
-                const octaveOffset = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * this.edo;
-                let lastPitch = ((isNoiseChannel || isModChannel) ? 4 : this.edo) + octaveOffset;
+                const octaveOffset = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * Config.pitchesPerOctave;
+                let lastPitch = ((isNoiseChannel || isModChannel) ? 4 : Config.pitchesPerOctave) + octaveOffset;
                 const recentPitches = isModChannel ? [0, 1, 2, 3, 4, 5] : (isNoiseChannel ? [4, 6, 7, 2, 3, 8, 0, 10] : [12, 19, 24, 31, 36, 7, 0]);
                 const recentShapes = [];
                 for (let i = 0; i < recentPitches.length; i++) {
@@ -2942,17 +2941,6 @@ var beepbox = (function (exports) {
                             else {
                                 this.reverb = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
                                 this.reverb = clamp(0, Config.reverbRange, this.reverb);
-                            }
-                        }
-                        break;
-                    case 88:
-                        {
-                            if (beforeEight && (variant == "beepbox" || variant == "jummbox")) {
-                                this.edo = 12;
-                                charIndex++;
-                            }
-                            else {
-                                this.edo = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
                             }
                         }
                         break;
@@ -3592,10 +3580,10 @@ var beepbox = (function (exports) {
                                         }
                                     }
                                 }
-                                const octaveOffset = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * this.edo;
+                                const octaveOffset = (isNoiseChannel || isModChannel) ? 0 : this.channels[channel].octave * Config.pitchesPerOctave;
                                 let note = null;
                                 let pin = null;
-                                let lastPitch = ((isNoiseChannel || isModChannel) ? 4 : this.edo) + octaveOffset;
+                                let lastPitch = ((isNoiseChannel || isModChannel) ? 4 : Config.pitchesPerOctave) + octaveOffset;
                                 const recentPitches = isModChannel ? [0, 1, 2, 3, 4, 5] : (isNoiseChannel ? [4, 6, 7, 2, 3, 8, 0, 10] : [12, 19, 24, 31, 36, 7, 0]);
                                 const recentShapes = [];
                                 for (let i = 0; i < recentPitches.length; i++) {
@@ -4006,7 +3994,7 @@ var beepbox = (function (exports) {
                                 if (note.pins.length < 2)
                                     continue;
                                 note.end = note.pins[note.pins.length - 1].time + note.start;
-                                const maxPitch = isNoiseChannel ? Config.drumCount - 1 : this.maxPitch;
+                                const maxPitch = isNoiseChannel ? Config.drumCount - 1 : Config.maxPitch;
                                 let lowestPitch = maxPitch;
                                 let highestPitch = 0;
                                 for (let k = 0; k < note.pitches.length; k++) {
@@ -5991,7 +5979,7 @@ var beepbox = (function (exports) {
                     const freqMult = Config.operatorFrequencies[instrument.operators[i].frequency].mult;
                     const interval = Config.operatorCarrierInterval[associatedCarrierIndex] + arpeggioInterval;
                     const startPitch = basePitch + (pitch + intervalStart + detuneStart) * intervalScale + interval;
-                    const startFreq = freqMult * (Instrument.frequencyFromPitch(startPitch, song.centerFrequency, song.edo)) + Config.operatorFrequencies[instrument.operators[i].frequency].hzOffset;
+                    const startFreq = freqMult * (Instrument.frequencyFromPitch(startPitch)) + Config.operatorFrequencies[instrument.operators[i].frequency].hzOffset;
                     tone.phaseDeltas[i] = startFreq * sampleTime * Config.sineWaveLength;
                     let amplitudeStart = instrument.operators[i].amplitude;
                     let amplitudeEnd = instrument.operators[i].amplitude;
@@ -6083,7 +6071,7 @@ var beepbox = (function (exports) {
                     const arpeggio = Math.floor(instrument.arpTime / Config.ticksPerArpeggio);
                     if (chord.harmonizes) {
                         const intervalOffset = tone.pitches[1 + getArpeggioPitchIndex(tone.pitchCount - 1, instrument.fastTwoNoteArp, arpeggio)] - tone.pitches[0];
-                        tone.intervalMult = Math.pow(2.0, intervalOffset / song.edo);
+                        tone.intervalMult = Math.pow(2.0, intervalOffset / Config.pitchesPerOctave);
                         tone.intervalVolumeMult = Math.pow(2.0, -intervalOffset / pitchDamping);
                     }
                     else {
@@ -6092,7 +6080,7 @@ var beepbox = (function (exports) {
                 }
                 const startPitch = basePitch + (pitch + intervalStart + detuneStart) * intervalScale;
                 const endPitch = basePitch + (pitch + intervalEnd + detuneEnd) * intervalScale;
-                const startFreq = Instrument.frequencyFromPitch(startPitch, song.centerFrequency, song.edo);
+                const startFreq = Instrument.frequencyFromPitch(startPitch);
                 const pitchVolumeStart = Math.pow(2.0, -(startPitch - volumeReferencePitch) / pitchDamping);
                 const pitchVolumeEnd = Math.pow(2.0, -(endPitch - volumeReferencePitch) / pitchDamping);
                 let settingsVolumeMultStart = baseVolume * filterVolumeStart;
@@ -6141,7 +6129,7 @@ var beepbox = (function (exports) {
                 }
                 tone.volumeDelta = (volumeEnd - tone.volumeStart) / runLength;
             }
-            tone.phaseDeltaScale = Math.pow(2.0, ((intervalEnd - intervalStart) * intervalScale / song.edo) / runLength);
+            tone.phaseDeltaScale = Math.pow(2.0, ((intervalEnd - intervalStart) * intervalScale / Config.pitchesPerOctave) / runLength);
         }
         static getLFOAmplitude(instrument, secondsIntoBar) {
             let effect = 0;
@@ -6229,7 +6217,7 @@ var beepbox = (function (exports) {
                 throw new Error("Unrecognized instrument type: " + instrument.type);
             }
         }
-        static chipSynth(synth, data, stereoBufferIndex, stereoBufferLength, runLength, tone, instrument, edo) {
+        static chipSynth(synth, data, stereoBufferIndex, stereoBufferLength, runLength, tone, instrument) {
             var wave;
             var volumeScale;
             const isCustomWave = (instrument.type == 7);
@@ -6242,8 +6230,8 @@ var beepbox = (function (exports) {
                 volumeScale = 0.1;
             }
             const waveLength = +wave.length - 1;
-            const intervalA = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / edo);
-            const intervalB = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / edo) * tone.intervalMult;
+            const intervalA = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave);
+            const intervalB = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave) * tone.intervalMult;
             const intervalSign = tone.intervalVolumeMult * Config.intervals[instrument.interval].sign;
             if (instrument.interval == 0 && !instrument.getChord().customInterval)
                 tone.phases[1] = tone.phases[0];
@@ -6331,11 +6319,11 @@ var beepbox = (function (exports) {
             tone.filterSample0 = filterSample0;
             tone.filterSample1 = filterSample1;
         }
-        static harmonicsSynth(synth, data, stereoBufferIndex, stereoBufferLength, runLength, tone, instrument, edo) {
+        static harmonicsSynth(synth, data, stereoBufferIndex, stereoBufferLength, runLength, tone, instrument) {
             const wave = instrument.harmonicsWave.getCustomWave();
             const waveLength = +wave.length - 1;
-            const intervalA = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / edo);
-            const intervalB = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / edo) * tone.intervalMult;
+            const intervalA = +Math.pow(2.0, (Config.intervals[instrument.interval].offset + Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave);
+            const intervalB = Math.pow(2.0, (Config.intervals[instrument.interval].offset - Config.intervals[instrument.interval].spread) / Config.pitchesPerOctave) * tone.intervalMult;
             const intervalSign = tone.intervalVolumeMult * Config.intervals[instrument.interval].sign;
             if (instrument.interval == 0 && !instrument.getChord().customInterval)
                 tone.phases[1] = tone.phases[0];
@@ -6628,8 +6616,8 @@ var beepbox = (function (exports) {
             tone.filterSample0 = filterSample0;
             tone.filterSample1 = filterSample1;
         }
-        static drumsetSynth(synth, data, stereoBufferIndex, stereoBufferLength, runLength, tone, instrument, edo) {
-            let wave = instrument.getDrumsetWave(tone.drumsetPitch, edo);
+        static drumsetSynth(synth, data, stereoBufferIndex, stereoBufferLength, runLength, tone, instrument) {
+            let wave = instrument.getDrumsetWave(tone.drumsetPitch);
             let phaseDelta = tone.phaseDeltas[0] / Instrument.drumsetIndexReferenceDelta(tone.drumsetPitch);
             const phaseDeltaScale = +tone.phaseDeltaScale;
             let volume = +tone.volumeStart;
