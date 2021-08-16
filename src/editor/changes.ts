@@ -816,7 +816,7 @@ export class ChangeEdo extends Change {
 		if (doc.song.edo != newValue) {
 			doc.song.edo = newValue;
 			doc.song.maxPitch = newValue * Config.pitchOctaves;
-			
+
 			doc.notifier.changed();
 
 			this._didSomething();

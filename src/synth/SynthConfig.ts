@@ -419,7 +419,7 @@ export class Config {
 	public static readonly modChannelCountMax: number = 8;
 	public static readonly noiseInterval: number = 6;
 	public static readonly centerFrequency = 425.85465642512778279
-	public static readonly pitchesPerOctave: number = 19;
+	public static readonly pitchesPerOctave: number = 12;
 	public static readonly drumCount: number = 12;
 	public static readonly modCount: number = 6;
 	public static readonly pitchOctaves: number = 9; // prev 8
