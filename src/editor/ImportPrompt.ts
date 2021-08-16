@@ -403,8 +403,8 @@ export class ImportPrompt implements Prompt {
 			const channelBasePitch: number = isNoiseChannel ? Config.spectrumBasePitch : Config.keys[key].basePitch;
 			const intervalScale: number = isNoiseChannel ? Config.noiseInterval : 1;
 			const midiIntervalScale: number = isNoiseChannel ? 0.5 : 1;
-			// const channelMaxPitch: number = isNoiseChannel ? Config.drumCount - 1 : 12 * Config.pitchOctaves; // hardcoded 12edo for midi
-			const channelMaxPitch: number = isNoiseChannel ? Config.drumCount - 1 : Config.maxPitch;
+			const channelMaxPitch: number = isNoiseChannel ? Config.drumCount - 1 : 12 * Config.pitchOctaves; // hardcoded 12edo for midi
+			// const channelMaxPitch: number = isNoiseChannel ? Config.drumCount - 1 : Config.maxPitch;
 
 			if (isNoiseChannel) {
 				if (isDrumsetChannel) {

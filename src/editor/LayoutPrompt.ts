@@ -89,8 +89,8 @@ export class LayoutPrompt implements Prompt {
 		Layout.setFullScreen(this._doc.fullScreen);
 		this._doc.windowOctaves = 3 + (+(window.localStorage.getItem("extraOctaves") || "0"));
 		this._doc.scrollableOctaves = Config.pitchOctaves - this._doc.windowOctaves;
-		// this._doc.windowPitchCount = this._doc.windowOctaves * this._doc.song.edo + 1;
-		this._doc.windowPitchCount = this._doc.windowOctaves * Config.pitchesPerOctave + 1;
+		this._doc.windowPitchCount = this._doc.windowOctaves * this._doc.song.edo + 1;
+		// this._doc.windowPitchCount = this._doc.windowOctaves * Config.pitchesPerOctave + 1;
 		this._doc.undo();
 	}
 }

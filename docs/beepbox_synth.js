@@ -73,9 +73,11 @@ var beepbox = (function (exports) {
     Config.beatsPerBarMax = 32;
     Config.barCountMin = 1;
     Config.barCountMax = 512;
+    Config.edoMin = 1;
+    Config.edoMax = 72;
     Config.instrumentsPerChannelMin = 1;
     Config.instrumentsPerChannelMax = 16;
-    Config.partsPerBeat = 24;
+    Config.partsPerBeat = 48;
     Config.ticksPerPart = 2;
     Config.ticksPerArpeggio = 3;
     Config.arpeggioPatterns = [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4, 5, 6, 7]];
@@ -280,7 +282,7 @@ var beepbox = (function (exports) {
     Config.modChannelCountMin = 0;
     Config.modChannelCountMax = 8;
     Config.noiseInterval = 6;
-    Config.centerFrequency = 425.854656;
+    Config.centerFrequency = 425.85465642512778279;
     Config.pitchesPerOctave = 19;
     Config.drumCount = 12;
     Config.modCount = 6;
@@ -503,7 +505,7 @@ var beepbox = (function (exports) {
         }
     }
     EditorConfig.version = "2.3";
-    EditorConfig.versionDisplayName = "MicroBox " + EditorConfig.version;
+    EditorConfig.versionDisplayName = "MicroBox Alpha " + EditorConfig.version;
     EditorConfig.presetCategories = toNameMap([
         {
             name: "Custom Instruments", presets: toNameMap([
@@ -2045,7 +2047,7 @@ var beepbox = (function (exports) {
             return Config.centerFrequency * Math.pow(2.0, pitch / Config.pitchesPerOctave - Math.round(Config.pitchOctaves / 2));
         }
         static drumsetIndexReferenceDelta(index) {
-            return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * (Config.pitchOctaves * Config.pitchesPerOctave - Config.spectrumBasePitch) / Config.drumCount) / 44100;
+            return Instrument.frequencyFromPitch(Config.spectrumBasePitch + index * (8 * 12 - Config.spectrumBasePitch) / Config.drumCount) / 44100;
         }
         static _drumsetIndexToSpectrumOctave(index) {
             return 15 + Math.log(Instrument.drumsetIndexReferenceDelta(index)) / Math.LN2;
@@ -2363,25 +2365,28 @@ var beepbox = (function (exports) {
             this.key = 0;
             this.loopStart = 0;
             this.loopLength = 4;
-            this.tempo = 150;
+            this.tempo = 100;
             this.reverb = 0;
-            this.beatsPerBar = 8;
+            this.centerFrequency = 425.85465642512778279;
+            this.edo = 12;
+            this.maxPitch = this.edo * Config.pitchOctaves;
+            this.beatsPerBar = 6;
             this.barCount = 16;
-            this.patternsPerChannel = 8;
-            this.rhythm = 1;
-            this.instrumentsPerChannel = 1;
+            this.patternsPerChannel = 16;
+            this.rhythm = 3;
+            this.instrumentsPerChannel = 2;
             this.title = "Unnamed";
             document.title = EditorConfig.versionDisplayName;
             if (andResetChannels) {
-                this.pitchChannelCount = 3;
-                this.noiseChannelCount = 1;
-                this.modChannelCount = 0;
+                this.pitchChannelCount = 4;
+                this.noiseChannelCount = 2;
+                this.modChannelCount = 1;
                 for (let channelIndex = 0; channelIndex < this.getChannelCount(); channelIndex++) {
                     if (this.channels.length <= channelIndex) {
                         this.channels[channelIndex] = new Channel();
                     }
                     const channel = this.channels[channelIndex];
-                    channel.octave = Math.max(3 - channelIndex, 0);
+                    channel.octave = Math.max(6 - 2 * channelIndex, 0);
                     for (let pattern = 0; pattern < this.patternsPerChannel; pattern++) {
                         if (channel.patterns.length <= pattern) {
                             channel.patterns[pattern] = new Pattern();
@@ -2426,6 +2431,7 @@ var beepbox = (function (exports) {
             buffer.push(101, base64IntToCharCode[(this.loopLength - 1) >> 6], base64IntToCharCode[(this.loopLength - 1) & 0x3f]);
             buffer.push(116, base64IntToCharCode[this.tempo >> 6], base64IntToCharCode[this.tempo & 0x3F]);
             buffer.push(109, base64IntToCharCode[this.reverb]);
+            buffer.push(88, base64IntToCharCode[this.edo]);
             buffer.push(97, base64IntToCharCode[this.beatsPerBar - 1]);
             buffer.push(103, base64IntToCharCode[(this.barCount - 1) >> 6], base64IntToCharCode[(this.barCount - 1) & 0x3f]);
             buffer.push(106, base64IntToCharCode[(this.patternsPerChannel - 1) >> 6], base64IntToCharCode[(this.patternsPerChannel - 1) & 0x3f]);
@@ -2941,6 +2947,17 @@ var beepbox = (function (exports) {
                             else {
                                 this.reverb = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
                                 this.reverb = clamp(0, Config.reverbRange, this.reverb);
+                            }
+                        }
+                        break;
+                    case 88:
+                        {
+                            if (beforeEight && (variant == "beepbox" || variant == "jummbox")) {
+                                this.edo = 12;
+                                charIndex++;
+                            }
+                            else {
+                                this.edo = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
                             }
                         }
                         break;
@@ -3822,7 +3839,8 @@ var beepbox = (function (exports) {
                 "name": this.title,
                 "format": Song._format,
                 "version": Song._latestJummBoxVersion,
-                "scale": Config.scales[this.scale].name,
+                "centerFrequency": this.centerFrequency,
+                "edo": this.edo,
                 "introBars": this.loopStart,
                 "loopBars": this.loopLength,
                 "beatsPerBar": this.beatsPerBar,
@@ -3840,18 +3858,13 @@ var beepbox = (function (exports) {
                 this.title = jsonObject["name"];
             }
             this.scale = 0;
-            if (jsonObject["scale"] != undefined) {
-                const oldScaleNames = {
-                    "romani :)": "dbl harmonic :)",
-                    "romani :(": "dbl harmonic :(",
-                    "enigma": "strange",
-                };
-                const scaleName = (oldScaleNames[jsonObject["scale"]] != undefined) ? oldScaleNames[jsonObject["scale"]] : jsonObject["scale"];
-                const scale = Config.scales.findIndex(scale => scale.name == scaleName);
-                if (scale != -1)
-                    this.scale = scale;
-            }
             this.key = 0;
+            if (jsonObject["centerFrequency"] != undefined) {
+                this.centerFrequency = jsonObject["centerFrequency"];
+            }
+            if (jsonObject["edo"] != undefined) {
+                this.edo = jsonObject["edo"];
+            }
             if (jsonObject["beatsPerMinute"] != undefined) {
                 this.tempo = clamp(Config.tempoMin, Config.tempoMax + 1, jsonObject["beatsPerMinute"] | 0);
             }

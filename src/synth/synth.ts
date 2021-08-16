@@ -1424,7 +1424,7 @@ export class Song {
 
 	public title: string;
 	public scale: number;
-	// public key: number; // this is frequency offset for different edos
+	// public key: number; // this is frequency offset for different edos (TODO)
 	public key: number;
 	public tempo: number;
 	public reverb: number;
@@ -1679,29 +1679,29 @@ export class Song {
 		this.centerFrequency = 425.85465642512778279; // very specific :}
 		this.edo = 12;
 		this.maxPitch = this.edo * Config.pitchOctaves;
-		// this.beatsPerBar = 6;
-		this.beatsPerBar = 8;
+		this.beatsPerBar = 6;
+		// this.beatsPerBar = 8;
 		this.barCount = 16;
-		// this.patternsPerChannel = 16;
-		// this.rhythm = 3; // div4 standard
-		// this.instrumentsPerChannel = 2;
-		this.patternsPerChannel = 8;
-		this.rhythm = 1;
-		this.instrumentsPerChannel = 1;
+		this.patternsPerChannel = 16;
+		this.rhythm = 3; // div4 standard
+		this.instrumentsPerChannel = 2;
+		// this.patternsPerChannel = 8;
+		// this.rhythm = 1;
+		// this.instrumentsPerChannel = 1;
 
 		this.title = "Unnamed";
 		document.title = EditorConfig.versionDisplayName;
 
 		if (andResetChannels) {
-			this.pitchChannelCount = 3;
-			this.noiseChannelCount = 1;
-			this.modChannelCount = 0;
+			this.pitchChannelCount = 4;
+			this.noiseChannelCount = 2;
+			this.modChannelCount = 1;
 			for (let channelIndex = 0; channelIndex < this.getChannelCount(); channelIndex++) {
 				if (this.channels.length <= channelIndex) {
 					this.channels[channelIndex] = new Channel();
 				}
 				const channel: Channel = this.channels[channelIndex];
-				channel.octave = Math.max(3 - channelIndex, 0); // [3, 2, 1, 0, 0, ...]; Descending octaves with drums at zero in last channel and onward.
+				channel.octave = Math.max(6 - 2*channelIndex, 0); // [6, 4, 2, 0, 0, ...]; Descending octaves with drums at zero in last channel and onward.
 
 				for (let pattern = 0; pattern < this.patternsPerChannel; pattern++) {
 					if (channel.patterns.length <= pattern) {
@@ -3163,8 +3163,10 @@ export class Song {
 			"name": this.title,
 			"format": Song._format,
 			"version": Song._latestJummBoxVersion,
-			"scale": Config.scales[this.scale].name,
+			// "scale": Config.scales[this.scale].name,
 			// "key": Config.keys[this.key].name, // key relic (TODO)
+			"centerFrequency": this.centerFrequency,
+			"edo": this.edo,
 			"introBars": this.loopStart,
 			"loopBars": this.loopLength,
 			"beatsPerBar": this.beatsPerBar,
@@ -3190,17 +3192,18 @@ export class Song {
 		}
 
 		this.scale = 0; // default to free.
-		if (jsonObject["scale"] != undefined) {
-			const oldScaleNames: Dictionary<string> = {
-				"romani :)": "dbl harmonic :)",
-				"romani :(": "dbl harmonic :(",
-				"enigma": "strange",
-			};
-			const scaleName: string = (oldScaleNames[jsonObject["scale"]] != undefined) ? oldScaleNames[jsonObject["scale"]] : jsonObject["scale"];
-			const scale: number = Config.scales.findIndex(scale => scale.name == scaleName);
-			if (scale != -1) this.scale = scale;
-		}
+		// if (jsonObject["scale"] != undefined) {
+		// 	const oldScaleNames: Dictionary<string> = {
+		// 		"romani :)": "dbl harmonic :)",
+		// 		"romani :(": "dbl harmonic :(",
+		// 		"enigma": "strange",
+		// 	};
+		// 	const scaleName: string = (oldScaleNames[jsonObject["scale"]] != undefined) ? oldScaleNames[jsonObject["scale"]] : jsonObject["scale"];
+		// 	const scale: number = Config.scales.findIndex(scale => scale.name == scaleName);
+		// 	if (scale != -1) this.scale = scale;
+		// }
 
+		// TODO: Change key to song frequency offset
 		// if (jsonObject["key"] != undefined) {
 		// 	if (typeof (jsonObject["key"]) == "number") {
 		// 		this.key = ((jsonObject["key"] + 1200) >>> 0) % Config.keys.length;
@@ -3221,6 +3224,14 @@ export class Song {
 		// 	}
 		// }
 		this.key = 0; // key relic (TODO)
+
+		if (jsonObject["centerFrequency"] != undefined) {
+			this.centerFrequency = jsonObject["centerFrequency"];
+		}
+
+		if (jsonObject["edo"] != undefined) {
+			this.edo = jsonObject["edo"];
+		}
 
 		if (jsonObject["beatsPerMinute"] != undefined) {
 			this.tempo = clamp(Config.tempoMin, Config.tempoMax + 1, jsonObject["beatsPerMinute"] | 0);

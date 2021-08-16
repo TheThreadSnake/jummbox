@@ -206,8 +206,7 @@ export class Config {
 	public static readonly edoMax: number = 72;
 	public static readonly instrumentsPerChannelMin: number = 1;
 	public static readonly instrumentsPerChannelMax: number = 16;
-	// public static readonly partsPerBeat: number = 48;
-	public static readonly partsPerBeat: number = 24;
+	public static readonly partsPerBeat: number = 48; // prev 24;
 	public static readonly ticksPerPart: number = 2;
 	public static readonly ticksPerArpeggio: number = 3;
 	public static readonly arpeggioPatterns: ReadonlyArray<ReadonlyArray<number>> = [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4, 5, 6, 7]];
@@ -216,13 +215,13 @@ export class Config {
 		{ name: "÷2 (duplets)", stepsPerBeat: 2, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: [/*0*/ 5, /*8*/ 12, /*16*/ 18 /*24*/] },
 		{ name: "÷3 (triplets)", stepsPerBeat: 3, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: [/*0*/ 5, /*8*/ 12, /*16*/ 18 /*24*/] },
 		{ name: "÷4 (standard)", stepsPerBeat: 4, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: [/*0*/ 3, /*6*/ 9, /*12*/ 17, /*18*/ 21 /*24*/] },
-		// { name: "÷5", stepsPerBeat: 5, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
+		{ name: "÷5", stepsPerBeat: 5, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
 		{ name: "÷6", stepsPerBeat: 6, /*ticksPerArpeggio: 4, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
 		{ name: "÷8", stepsPerBeat: 8, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
-		// { name: "÷9", stepsPerBeat: 9, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
+		{ name: "÷9", stepsPerBeat: 9, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
 		{ name: "÷12", stepsPerBeat: 12, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
 		{ name: "÷16", stepsPerBeat: 16, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
-		// { name: "÷24 (freehand)", stepsPerBeat: 24, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
+		{ name: "÷24 (freehand)", stepsPerBeat: 24, /*ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3]]*/ roundUpThresholds: null },
 	]);
 
 	public static readonly instrumentTypeNames: ReadonlyArray<string> = ["chip", "FM", "noise", "spectrum", "drumset", "harmonics", "PWM", "custom chip", "mod"];
@@ -419,14 +418,12 @@ export class Config {
 	public static readonly modChannelCountMin: number = 0;
 	public static readonly modChannelCountMax: number = 8;
 	public static readonly noiseInterval: number = 6;
-	// public static readonly centerFrequency = 425.85465642512778279
-	public static readonly centerFrequency = 425.854656
+	public static readonly centerFrequency = 425.85465642512778279
 	public static readonly pitchesPerOctave: number = 19;
 	public static readonly drumCount: number = 12;
 	public static readonly modCount: number = 6;
 	public static readonly pitchOctaves: number = 9; // prev 8
 	public static readonly maxScrollableOctaves: number = 5; // Largest number possible with any config setting
-	// public static readonly maxPitch: number = Config.pitchOctaves * Config.pitchesPerOctave;
 	public static readonly maxPitch: number = Config.pitchOctaves * Config.pitchesPerOctave;
 	public static readonly maximumTonesPerChannel: number = Config.maxChordSize * 2;
 	public static readonly sineWaveLength: number = 1 << 8; // 256
