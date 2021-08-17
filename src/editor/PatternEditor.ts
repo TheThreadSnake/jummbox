@@ -1368,7 +1368,8 @@ export class PatternEditor {
 		}
 		else {
 			this._pitchBorder = 0;
-			this._pitchCount = this._doc.windowPitchCount;
+			// this._pitchCount = this._doc.windowPitchCount;
+			this._pitchCount = this._doc.song.edo * this._doc.windowOctaves + 1;
 		}
 
 		this._pitchHeight = this._editorHeight / this._pitchCount;
@@ -1397,7 +1398,7 @@ export class PatternEditor {
 		}
 
 		const beatWidth = this._editorWidth / this._doc.song.beatsPerBar;
-		if (this._renderedBeatWidth != beatWidth || this._renderedPitchHeight != this._pitchHeight) {
+		if (this._renderedBeatWidth != beatWidth || this._renderedPitchHeight != this._pitchHeight || this._renderedFifths != this._doc.showFifth) {
 			this._renderedBeatWidth = beatWidth;
 			this._renderedPitchHeight = this._pitchHeight;
 			this._svgNoteBackground.setAttribute("width", "" + beatWidth);
@@ -1415,6 +1416,29 @@ export class PatternEditor {
 				this._backgroundModRow.setAttribute("height", "" + (this._pitchHeight - this._pitchBorder));
 			}
 
+			this._renderedFifths = this._doc.showFifth;
+
+			// change number of SVGRectElements to current edo:
+
+			let _tempChildRectDifference = this._doc.song.edo - this._svgNoteBackground.childElementCount
+
+			if (_tempChildRectDifference != 0) {
+				if (_tempChildRectDifference > 0) { // create children
+					for (let j: number = 0; j < Math.abs(_tempChildRectDifference); j++) {
+						const rectangle: SVGRectElement = SVG.rect();
+						rectangle.setAttribute("x", "1");
+						rectangle.setAttribute("fill", ColorConfig.pitchBackground);
+						this._svgNoteBackground.appendChild(rectangle);
+						this._backgroundPitchRows.push(rectangle);
+						// this._backgroundPitchRows[this._backgroundPitchRows.length] = rectangle; // I could do this instead
+					}
+				} else { // < 0: kill children
+					for (let j: number = 0; j < Math.abs(_tempChildRectDifference); j++) {
+						this._svgNoteBackground.lastChild?.remove();
+						this._backgroundPitchRows.pop();
+					}
+				}
+			}
 
 			for (let j: number = 0; j < this._doc.song.edo; j++) {
 			// for (let j: number = 0; j < Config.pitchesPerOctave; j++) {
@@ -1424,6 +1448,11 @@ export class PatternEditor {
 				rectangle.setAttribute("width", "" + (beatWidth - 2));
 				rectangle.setAttribute("y", "" + (y * this._pitchHeight + 1));
 				rectangle.setAttribute("height", "" + (this._pitchHeight - 2));
+				rectangle.setAttribute("fill", (
+					(j == Math.round(this._doc.song.edo * Math.log2(3 / 2)) && this._doc.showFifth)
+						? ColorConfig.fifthNote
+						: (j == 0 ? ColorConfig.tonic : ColorConfig.pitchBackground)
+					));
 			}
 		}
 
@@ -1433,12 +1462,6 @@ export class PatternEditor {
 			if (!this._mouseDown) this._updateCursorStatus();
 			this._updatePreview();
 			this._updateSelection();
-		}
-
-		if (this._renderedFifths != this._doc.showFifth) {
-			this._renderedFifths = this._doc.showFifth;
-			this._backgroundPitchRows[Math.round(this._doc.song.edo * Math.log2(3 / 2))].setAttribute("fill", this._doc.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
-			// this._backgroundPitchRows[Math.round(Config.pitchesPerOctave * Math.log2(3 / 2))].setAttribute("fill", this._doc.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
 		}
 
 		for (let j: number = 0; j < this._doc.song.edo; j++) {

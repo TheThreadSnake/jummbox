@@ -203,7 +203,7 @@ export class Config {
 	public static readonly barCountMin: number = 1;
 	public static readonly barCountMax: number = 512;
 	public static readonly edoMin: number = 1;
-	public static readonly edoMax: number = 72;
+	public static readonly edoMax: number = 53; // want 72
 	public static readonly instrumentsPerChannelMin: number = 1;
 	public static readonly instrumentsPerChannelMax: number = 16;
 	public static readonly partsPerBeat: number = 48; // prev 24;

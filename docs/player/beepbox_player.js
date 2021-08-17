@@ -74,7 +74,7 @@ var beepbox = (function (exports) {
     Config.barCountMin = 1;
     Config.barCountMax = 512;
     Config.edoMin = 1;
-    Config.edoMax = 72;
+    Config.edoMax = 53;
     Config.instrumentsPerChannelMin = 1;
     Config.instrumentsPerChannelMax = 16;
     Config.partsPerBeat = 48;
@@ -4039,7 +4039,7 @@ var beepbox = (function (exports) {
                         this.channels[channelIndex] = new Channel();
                     }
                     const channel = this.channels[channelIndex];
-                    channel.octave = Math.max(6 - 2 * channelIndex, 0);
+                    channel.octave = Math.max(4 - channelIndex, 0);
                     for (let pattern = 0; pattern < this.patternsPerChannel; pattern++) {
                         if (channel.patterns.length <= pattern) {
                             channel.patterns[pattern] = new Pattern();
@@ -4605,13 +4605,7 @@ var beepbox = (function (exports) {
                         break;
                     case 88:
                         {
-                            if (beforeEight && (variant == "beepbox" || variant == "jummbox")) {
-                                this.edo = 12;
-                                charIndex++;
-                            }
-                            else {
-                                this.edo = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
-                            }
+                            this.edo = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
                         }
                         break;
                     case 97:

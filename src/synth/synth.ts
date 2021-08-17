@@ -1701,7 +1701,7 @@ export class Song {
 					this.channels[channelIndex] = new Channel();
 				}
 				const channel: Channel = this.channels[channelIndex];
-				channel.octave = Math.max(6 - 2*channelIndex, 0); // [6, 4, 2, 0, 0, ...]; Descending octaves with drums at zero in last channel and onward.
+				channel.octave = Math.max(4 - channelIndex, 0); // [4, 3, 2, 1, 0, ...]; Descending octaves with drums at zero in last channel and onward.
 
 				for (let pattern = 0; pattern < this.patternsPerChannel; pattern++) {
 					if (channel.patterns.length <= pattern) {
@@ -2325,12 +2325,13 @@ export class Song {
 				}
 			} break;
 			case SongTagCode.edo: {
-				if (beforeEight && ( variant == "beepbox" || variant == "jummbox")) {
-					this.edo = 12;
-					charIndex++;
-				} else {
-					this.edo = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
-				}
+				// if (beforeEight && ( variant == "beepbox" || variant == "jummbox")) {
+				// 	this.edo = 12;
+				// 	charIndex++;
+				// } else {
+				// 	this.edo = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
+				// }
+				this.edo = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
 			} break;
 			case SongTagCode.beatCount: {
 				if (beforeThree && variant == "beepbox") {

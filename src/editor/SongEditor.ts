@@ -1212,8 +1212,8 @@ export class SongEditor {
 
 		if (this._doc.getFullScreen()) {
 			const semitoneHeight: number = this._patternEditorRow.clientHeight / this._doc.windowPitchCount;
-			// const targetBeatWidth: number = semitoneHeight * this._doc.song.edo * 5/12;
-			const targetBeatWidth: number = semitoneHeight * Config.pitchesPerOctave * 5/12;
+			const targetBeatWidth: number = semitoneHeight * this._doc.song.edo * 5/12;
+			// const targetBeatWidth: number = semitoneHeight * Config.pitchesPerOctave * 5/12;
 			const minBeatWidth: number = this._patternEditorRow.clientWidth / (this._doc.song.beatsPerBar * 3);
 			const maxBeatWidth: number = this._patternEditorRow.clientWidth / (this._doc.song.beatsPerBar + 2);
 			const beatWidth: number = Math.max(minBeatWidth, Math.min(maxBeatWidth, targetBeatWidth));

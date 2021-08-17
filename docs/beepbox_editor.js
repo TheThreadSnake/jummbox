@@ -74,7 +74,7 @@ var beepbox = (function (exports) {
     Config.barCountMin = 1;
     Config.barCountMax = 512;
     Config.edoMin = 1;
-    Config.edoMax = 72;
+    Config.edoMax = 53;
     Config.instrumentsPerChannelMin = 1;
     Config.instrumentsPerChannelMax = 16;
     Config.partsPerBeat = 48;
@@ -5267,7 +5267,7 @@ li.select2-results__option[role=group] > strong:hover {
                         this.channels[channelIndex] = new Channel();
                     }
                     const channel = this.channels[channelIndex];
-                    channel.octave = Math.max(6 - 2 * channelIndex, 0);
+                    channel.octave = Math.max(4 - channelIndex, 0);
                     for (let pattern = 0; pattern < this.patternsPerChannel; pattern++) {
                         if (channel.patterns.length <= pattern) {
                             channel.patterns[pattern] = new Pattern();
@@ -5833,13 +5833,7 @@ li.select2-results__option[role=group] > strong:hover {
                         break;
                     case 88:
                         {
-                            if (beforeEight && (variant == "beepbox" || variant == "jummbox")) {
-                                this.edo = 12;
-                                charIndex++;
-                            }
-                            else {
-                                this.edo = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
-                            }
+                            this.edo = base64CharCodeToInt[compressed.charCodeAt(charIndex++)];
                         }
                         break;
                     case 97:
@@ -17798,6 +17792,7 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
             }
         }
         render() {
+            var _a;
             const nextPattern = this._doc.getCurrentPattern(this._barOffset);
             if (this._pattern != nextPattern && this._pattern != null) {
                 if (this._doc.song.getChannelIsMod(this._doc.channel) && this._interactive && nextPattern != null) {
@@ -17838,7 +17833,7 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
             }
             else {
                 this._pitchBorder = 0;
-                this._pitchCount = this._doc.windowPitchCount;
+                this._pitchCount = this._doc.song.edo * this._doc.windowOctaves + 1;
             }
             this._pitchHeight = this._editorHeight / this._pitchCount;
             if (this._renderedRhythm != this._doc.song.rhythm ||
@@ -17862,7 +17857,7 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
                 this._selectionRect.setAttribute("height", "" + this._editorHeight);
             }
             const beatWidth = this._editorWidth / this._doc.song.beatsPerBar;
-            if (this._renderedBeatWidth != beatWidth || this._renderedPitchHeight != this._pitchHeight) {
+            if (this._renderedBeatWidth != beatWidth || this._renderedPitchHeight != this._pitchHeight || this._renderedFifths != this._doc.showFifth) {
                 this._renderedBeatWidth = beatWidth;
                 this._renderedPitchHeight = this._pitchHeight;
                 this._svgNoteBackground.setAttribute("width", "" + beatWidth);
@@ -17878,12 +17873,34 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
                     this._backgroundModRow.setAttribute("width", "" + (beatWidth - 2));
                     this._backgroundModRow.setAttribute("height", "" + (this._pitchHeight - this._pitchBorder));
                 }
+                this._renderedFifths = this._doc.showFifth;
+                let _tempChildRectDifference = this._doc.song.edo - this._svgNoteBackground.childElementCount;
+                if (_tempChildRectDifference != 0) {
+                    if (_tempChildRectDifference > 0) {
+                        for (let j = 0; j < Math.abs(_tempChildRectDifference); j++) {
+                            const rectangle = SVG.rect();
+                            rectangle.setAttribute("x", "1");
+                            rectangle.setAttribute("fill", ColorConfig.pitchBackground);
+                            this._svgNoteBackground.appendChild(rectangle);
+                            this._backgroundPitchRows.push(rectangle);
+                        }
+                    }
+                    else {
+                        for (let j = 0; j < Math.abs(_tempChildRectDifference); j++) {
+                            (_a = this._svgNoteBackground.lastChild) === null || _a === void 0 ? void 0 : _a.remove();
+                            this._backgroundPitchRows.pop();
+                        }
+                    }
+                }
                 for (let j = 0; j < this._doc.song.edo; j++) {
                     const rectangle = this._backgroundPitchRows[j];
                     const y = (this._doc.song.edo - j) % this._doc.song.edo;
                     rectangle.setAttribute("width", "" + (beatWidth - 2));
                     rectangle.setAttribute("y", "" + (y * this._pitchHeight + 1));
                     rectangle.setAttribute("height", "" + (this._pitchHeight - 2));
+                    rectangle.setAttribute("fill", ((j == Math.round(this._doc.song.edo * Math.log2(3 / 2)) && this._doc.showFifth)
+                        ? ColorConfig.fifthNote
+                        : (j == 0 ? ColorConfig.tonic : ColorConfig.pitchBackground)));
                 }
             }
             this._svgNoteContainer = makeEmptyReplacementElement(this._svgNoteContainer);
@@ -17892,10 +17909,6 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
                     this._updateCursorStatus();
                 this._updatePreview();
                 this._updateSelection();
-            }
-            if (this._renderedFifths != this._doc.showFifth) {
-                this._renderedFifths = this._doc.showFifth;
-                this._backgroundPitchRows[Math.round(this._doc.song.edo * Math.log2(3 / 2))].setAttribute("fill", this._doc.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
             }
             for (let j = 0; j < this._doc.song.edo; j++) {
                 this._backgroundPitchRows[j].style.visibility = "visible";
@@ -19998,7 +20011,7 @@ const operator#Scaled   = operator#OutputMult * operator#Output;
                 this._volumeBarBox.style.display = this._doc.displayVolumeBar ? "" : "none";
                 if (this._doc.getFullScreen()) {
                     const semitoneHeight = this._patternEditorRow.clientHeight / this._doc.windowPitchCount;
-                    const targetBeatWidth = semitoneHeight * Config.pitchesPerOctave * 5 / 12;
+                    const targetBeatWidth = semitoneHeight * this._doc.song.edo * 5 / 12;
                     const minBeatWidth = this._patternEditorRow.clientWidth / (this._doc.song.beatsPerBar * 3);
                     const maxBeatWidth = this._patternEditorRow.clientWidth / (this._doc.song.beatsPerBar + 2);
                     const beatWidth = Math.max(minBeatWidth, Math.min(maxBeatWidth, targetBeatWidth));
