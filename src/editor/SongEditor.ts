@@ -1701,6 +1701,25 @@ export class SongEditor {
 					buildOptions(this._modInstrumentBoxes[mod], instrumentList);
 				}
 
+				// If non-zero pattern, point to which instrument is the current
+				if ( this._doc.song.channels[modChannel].bars[this._doc.bar] > 0 ) {
+					let usedInstrument: number = this._doc.song.getPatternInstrument(modChannel, this._doc.bar);
+
+					for (let i: number = 0; i < this._doc.song.instrumentsPerChannel; i++) {
+						if ( i == usedInstrument ) {
+							this._modInstrumentBoxes[mod].options[i].label = "🢒" + (i + 1);
+						}
+						else {
+							this._modInstrumentBoxes[mod].options[i].label = "" + (i + 1);
+						}
+					}
+				}
+				else {
+					for (let i: number = 0; i < this._doc.song.instrumentsPerChannel; i++) {
+						this._modInstrumentBoxes[mod].options[i].label = "" + (i + 1);
+					}
+				}
+
 				// Set selected index based on instrument info.
 				this._modInstrumentBoxes[mod].selectedIndex = instrument.modInstruments[mod];
 
@@ -2732,7 +2751,10 @@ export class SongEditor {
 		switch (this._fileMenu.value) {
 			case "new":
 				this._doc.goBackToStart();
-				for (const channel of this._doc.song.channels) channel.muted = false;
+				for (const channel of this._doc.song.channels) {
+					channel.muted = false;
+					channel.name = "";
+				}
 				this._doc.record(new ChangeSong(this._doc, ""), false, true);
 				break;
 			case "export":
