@@ -24,7 +24,7 @@ build this project, open the command line and run:
 
 ```cmd
 git clone https://github.com/jummbus/jummbox.git
-cd beepbox
+cd jummbox
 npm install
 npm run build
 ```
@@ -39,7 +39,7 @@ npm install @types/jquery
 
 ## Code
 
-The code is divided into several folders. Again, this bit is mostly the same as BeepBox. I will include the original excerpt again for reference.
+The code is divided into several folders. This architecture is identical to BeepBox's.
 
 The [src/synth/](src/synth) folder has just the code you need to be able to play BeepBox
 songs out loud, and you could use this code in your own projects, like a web
@@ -71,8 +71,8 @@ The build process outputs JavaScript files into this folder.
 ## Dependencies
 
 Most of the dependencies are listed in [package.json](package.json), although
-I'd like to note that BeepBox also has an indirect, optional dependency on
+I'd like to note that JummBox also has an indirect, optional dependency on
 [lamejs](https://www.npmjs.com/package/lamejs) via
 [jsdelivr](https://www.jsdelivr.com/) for exporting .mp3 files. If the user
-attempts to export an .mp3 file, BeepBox will direct the browser to download
+attempts to export an .mp3 file, JummBox will direct the browser to download
 that dependency on demand.

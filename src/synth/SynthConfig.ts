@@ -1,5 +1,5 @@
 /*!
-Copyright (C) 2020 John Nesky
+Copyright (C) 2021 John Nesky
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of 
 this software and associated documentation files (the "Software"), to deal in 
@@ -20,129 +20,221 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-//namespace beepbox {
 export interface Dictionary<T> {
-	[K: string]: T;
+    [K: string]: T;
 }
 
 export interface DictionaryArray<T> extends ReadonlyArray<T> {
-	dictionary: Dictionary<T>;
+    dictionary: Dictionary<T>;
+}
+
+export const enum FilterType {
+    lowPass,
+    highPass,
+    peak,
+    length,
 }
 
 export const enum EnvelopeType {
-	custom,
-	steady,
-	punch,
-	flare,
-	twang,
-	swell,
-	tremolo,
-	tremolo2,
-	decay,
+    noteSize,
+    none,
+    punch,
+    flare,
+    twang,
+    swell,
+    tremolo,
+    tremolo2,
+    decay,
 }
 
 export const enum InstrumentType {
-	chip = 0,
-	fm = 1,
-	noise = 2,
-	spectrum = 3,
-	drumset = 4,
-	harmonics = 5,
-	pwm = 6,
-	customChipWave = 7,
-	mod = 8,
-	length,
+    chip,
+    fm,
+    noise,
+    spectrum,
+    drumset,
+    harmonics,
+    pwm,
+    pickedString,
+    customChipWave,
+    mod,
+    length,
 }
 
+export const enum DropdownID {
+    Vibrato = 0,
+    Pan = 1,
+    Chord = 2,
+    Transition = 3,
+    FM = 4,
+
+}
+
+export const enum EffectType {
+    reverb,
+    chorus,
+    panning,
+    distortion,
+    bitcrusher,
+    noteFilter,
+    echo,
+    pitchShift,
+    detune,
+    vibrato,
+    transition,
+    chord,
+    // If you add more, you'll also have to extend the bitfield used in Base64 which currently uses two six-bit characters.
+    length,
+}
+
+export const enum NoteAutomationIndex {
+    noteVolume,
+    noteFilterAllFreqs,
+    pulseWidth,
+    stringSustain,
+    unison,
+    operatorFrequency0, operatorFrequency1, operatorFrequency2, operatorFrequency3,
+    operatorAmplitude0, operatorAmplitude1, operatorAmplitude2, operatorAmplitude3,
+    feedbackAmplitude,
+    pitchShift,
+    detune,
+    vibratoDepth,
+    noteFilterFreq0, noteFilterFreq1, noteFilterFreq2, noteFilterFreq3, noteFilterFreq4, noteFilterFreq5, noteFilterFreq6, noteFilterFreq7,
+    noteFilterGain0, noteFilterGain1, noteFilterGain2, noteFilterGain3, noteFilterGain4, noteFilterGain5, noteFilterGain6, noteFilterGain7,
+    length,
+}
+
+/*
+export const enum InstrumentAutomationIndex {
+    mixVolume,
+    eqFilterAllFreqs,
+    eqFilterFreq0, eqFilterFreq1, eqFilterFreq2, eqFilterFreq3, eqFilterFreq4, eqFilterFreq5, eqFilterFreq6, eqFilterFreq7,
+    eqFilterGain0, eqFilterGain1, eqFilterGain2, eqFilterGain3, eqFilterGain4, eqFilterGain5, eqFilterGain6, eqFilterGain7,
+    distortion,
+    bitcrusherQuantization,
+    bitcrusherFrequency,
+    panning,
+    chorus,
+    echoSustain,
+    //echoDelay, // Wait until tick settings can be computed once for multiple run lengths.
+    reverb,
+    length,
+}
+*/
+
 export interface BeepBoxOption {
-	readonly index: number;
-	readonly name: string;
+    readonly index: number;
+    readonly name: string;
 }
 
 export interface Scale extends BeepBoxOption {
-	readonly flags: ReadonlyArray<boolean>;
-	readonly realName: string;
+    readonly flags: ReadonlyArray<boolean>;
+    readonly realName: string;
 }
 
 export interface Key extends BeepBoxOption {
-	readonly isWhiteKey: boolean;
-	readonly basePitch: number;
+    readonly isWhiteKey: boolean;
+    readonly basePitch: number;
 }
 
 export interface Rhythm extends BeepBoxOption {
-	readonly stepsPerBeat: number;
-	//readonly ticksPerArpeggio: number;
-	//readonly arpeggioPatterns: ReadonlyArray<ReadonlyArray<number>>;
-	readonly roundUpThresholds: number[] | null;
+    readonly stepsPerBeat: number;
+    readonly roundUpThresholds: number[] | null;
 }
 
 export interface ChipWave extends BeepBoxOption {
-	readonly volume: number;
-	readonly samples: Float64Array;
+    readonly expression: number;
+    samples: Float64Array;
+}
+
+export interface OperatorWave extends BeepBoxOption {
+    samples: Float64Array;
 }
 
 export interface ChipNoise extends BeepBoxOption {
-	readonly volume: number;
-	readonly basePitch: number;
-	readonly pitchFilterMult: number;
-	readonly isSoft: boolean;
-	samples: Float32Array | null;
+    readonly expression: number;
+    readonly basePitch: number;
+    readonly pitchFilterMult: number;
+    readonly isSoft: boolean;
+    samples: Float32Array | null;
 }
 
 export interface Transition extends BeepBoxOption {
-	readonly isSeamless: boolean;
-	readonly attackSeconds: number;
-	readonly releases: boolean;
-	readonly releaseTicks: number;
-	readonly slides: boolean;
-	readonly slideTicks: number;
+    readonly isSeamless: boolean;
+    readonly continues: boolean;
+    readonly slides: boolean;
+    readonly slideTicks: number;
+    readonly includeAdjacentPatterns: boolean;
 }
 
 export interface Vibrato extends BeepBoxOption {
-	readonly amplitude: number;
-	readonly type: number;
-	readonly delayParts: number;
+    readonly amplitude: number;
+    readonly type: number;
+    readonly delayTicks: number;
 }
 
 export interface VibratoType extends BeepBoxOption {
-	readonly periodsSeconds: number[];
-	readonly period: number;
+    readonly periodsSeconds: number[];
+    readonly period: number;
 }
 
-export interface Interval extends BeepBoxOption {
-	readonly spread: number;
-	readonly offset: number;
-	readonly volume: number;
-	readonly sign: number;
+export interface Unison extends BeepBoxOption {
+    readonly voices: number;
+    readonly spread: number;
+    readonly offset: number;
+    readonly expression: number;
+    readonly sign: number;
+}
+
+export interface Modulator extends BeepBoxOption {
+    readonly name: string; // name that shows up in song editor UI
+    readonly pianoName: string; // short name that shows up in mod piano UI
+    readonly maxRawVol: number; // raw
+    readonly newNoteVol: number; // raw
+    readonly forSong: boolean; // true - setting is song scope
+    convertRealFactor: number; // offset that needs to be applied to get a "real" number display of value, for UI purposes
+    readonly associatedEffect: EffectType; // effect that should be enabled for this modulator to work properly. If unused, set to EffectType.length.
+
 }
 
 export interface Chord extends BeepBoxOption {
-	readonly harmonizes: boolean;
-	readonly customInterval: boolean;
-	readonly arpeggiates: boolean;
-	readonly isCustomInterval: boolean;
-	readonly strumParts: number;
+    readonly customInterval: boolean;
+    readonly arpeggiates: boolean;
+    readonly strumParts: number;
+    readonly singleTone: boolean;
 }
 
 export interface Algorithm extends BeepBoxOption {
-	readonly carrierCount: number;
-	readonly associatedCarrier: ReadonlyArray<number>;
-	readonly modulatedBy: ReadonlyArray<ReadonlyArray<number>>;
+    readonly carrierCount: number;
+    readonly associatedCarrier: ReadonlyArray<number>;
+    readonly modulatedBy: ReadonlyArray<ReadonlyArray<number>>;
 }
 
 export interface OperatorFrequency extends BeepBoxOption {
-	readonly mult: number;
-	readonly hzOffset: number;
-	readonly amplitudeSign: number;
-}
-
-export interface Envelope extends BeepBoxOption {
-	readonly type: EnvelopeType;
-	readonly speed: number;
+    readonly mult: number;
+    readonly hzOffset: number;
+    readonly amplitudeSign: number;
 }
 
 export interface Feedback extends BeepBoxOption {
-	readonly indices: ReadonlyArray<ReadonlyArray<number>>;
+    readonly indices: ReadonlyArray<ReadonlyArray<number>>;
+}
+
+export interface Envelope extends BeepBoxOption {
+    readonly type: EnvelopeType;
+    readonly speed: number;
+}
+
+export interface AutomationTarget extends BeepBoxOption {
+    readonly computeIndex: NoteAutomationIndex /*| InstrumentAutomationIndex*/ | null;
+    readonly displayName: string;
+    //readonly perNote: boolean; // Whether to compute envelopes on a per-note basis.
+    readonly interleave: boolean; // Whether to interleave this target with the next one in the menu.
+    readonly isFilter: boolean; // Filters have a variable maxCount in practice.
+    //readonly range: number | null; // set if automation is allowed.
+    readonly maxCount: number;
+    readonly effect: EffectType | null;
+    readonly compatibleInstruments: InstrumentType[] | null;
 }
 
 export class Config {
@@ -436,46 +528,59 @@ export class Config {
 }
 
 function centerWave(wave: Array<number>): Float64Array {
-	let sum: number = 0.0;
-	for (let i: number = 0; i < wave.length; i++) {
-		sum += wave[i];
-	}
-	const average: number = sum / wave.length;
+    let sum: number = 0.0;
+    for (let i: number = 0; i < wave.length; i++) sum += wave[i];
+    const average: number = sum / wave.length;
+    for (let i: number = 0; i < wave.length; i++) wave[i] -= average;
+    performIntegral(wave);
+    // The first sample should be zero, and we'll duplicate it at the end for easier interpolation.
+    wave.push(0);
+    return new Float64Array(wave);
+}
+function centerAndNormalizeWave(wave: Array<number>): Float64Array {
+    let magn: number = 0.0;
 
-	// Perform the integral on the wave. The chipSynth will perform the derivative to get the original wave back but with antialiasing.
-	let cumulative: number = 0;
-	let wavePrev: number = 0;
+    centerWave(wave);
+
+    // Going to length-1 because an extra 0 sample is added on the end as part of centerWave, which shouldn't impact magnitude calculation.
+    for (let i: number = 0; i < wave.length - 1; i++) {
+        magn += Math.abs(wave[i]);
+    }
+    const magnAvg: number = magn / (wave.length - 1);
+
+    for (let i: number = 0; i < wave.length - 1; i++) {
+        wave[i] = wave[i] / magnAvg;
+    }
+
+    return new Float64Array(wave);
+
+}
+export function performIntegral(wave: { length: number, [index: number]: number }): Float64Array {
+    // Perform the integral on the wave. The synth function will perform the derivative to get the original wave back but with antialiasing.
+    let cumulative: number = 0.0;
+    let newWave: Float64Array = new Float64Array(wave.length);
+    for (let i: number = 0; i < wave.length; i++) {
+        newWave[i] = cumulative;
+        cumulative += wave[i];
+    }
+
+    return newWave;
+}
+export function performIntegralOld(wave: { length: number, [index: number]: number }): void {
+	// Old ver used in harmonics/picked string instruments, manipulates wave in place.
+	let cumulative: number = 0.0;
 	for (let i: number = 0; i < wave.length; i++) {
-		cumulative += wavePrev;
-		wavePrev = wave[i] - average;
+		const temp = wave[i];
 		wave[i] = cumulative;
+		cumulative += temp;
 	}
-	// The first sample should be zero, and we'll duplicate it at the end for easier interpolation.
-	wave.push(0);
-	return new Float64Array(wave);
 }
 
-function centerAndNormalizeWave(wave: Array<number>): Float64Array {
-	let sum: number = 0.0;
-	let magn: number = 0.0;
-	for (let i: number = 0; i < wave.length; i++) {
-		sum += wave[i];
-		magn += Math.abs(wave[i]);
-	}
-	const average: number = sum / wave.length;
-	const magnAvg: number = magn / wave.length;
+export function getPulseWidthRatio(pulseWidth: number): number {
+    // BeepBox formula for reference
+    //return Math.pow(0.5, (Config.pulseWidthRange - 1 - pulseWidth) * Config.pulseWidthStepPower) * 0.5;
 
-	// Perform the integral on the wave. The chipSynth will perform the derivative to get the original wave back but with antialiasing.
-	let cumulative: number = 0;
-	let wavePrev: number = 0;
-	for (let i: number = 0; i < wave.length; i++) {
-		cumulative += wavePrev;
-		wavePrev = (wave[i] - average) / (magnAvg);
-		wave[i] = cumulative;
-	}
-	// The first sample should be zero, and we'll duplicate it at the end for easier interpolation.
-	wave.push(0);
-	return new Float64Array(wave);
+    return pulseWidth / (Config.pulseWidthRange * 2);
 }
 
 
@@ -484,169 +589,255 @@ function centerAndNormalizeWave(wave: Array<number>): Float64Array {
 // depend on FFT here. synth.ts will take care of importing FFT.ts.
 //function inverseRealFourierTransform(array: {length: number, [index: number]: number}, fullArrayLength: number): void;
 //function scaleElementsByFactor(array: {length: number, [index: number]: number}, factor: number): void;
-export function getDrumWave(index: number, inverseRealFourierTransform: Function | null = null, scaleElementsByFactor: Function | null = null): Float32Array {
-	let wave: Float32Array | null = Config.chipNoises[index].samples;
-	if (wave == null) {
-		wave = new Float32Array(Config.chipNoiseLength + 1);
-		Config.chipNoises[index].samples = wave;
+export function getDrumWave(index: number, inverseRealFourierTransform: Function | null, scaleElementsByFactor: Function | null): Float32Array {
+    let wave: Float32Array | null = Config.chipNoises[index].samples;
+    if (wave == null) {
+        wave = new Float32Array(Config.chipNoiseLength + 1);
+        Config.chipNoises[index].samples = wave;
 
-		if (index == 0) {
-			// The "retro" drum uses a "Linear Feedback Shift Register" similar to the NES noise channel.
-			let drumBuffer: number = 1;
-			for (let i: number = 0; i < Config.chipNoiseLength; i++) {
-				wave[i] = (drumBuffer & 1) * 2.0 - 1.0;
-				let newBuffer: number = drumBuffer >> 1;
-				if (((drumBuffer + newBuffer) & 1) == 1) {
-					newBuffer += 1 << 14;
-				}
-				drumBuffer = newBuffer;
-			}
-		} else if (index == 1) {
-			// White noise is just random values for each sample.
-			for (let i: number = 0; i < Config.chipNoiseLength; i++) {
-				wave[i] = Math.random() * 2.0 - 1.0;
-			}
-		} else if (index == 2) {
-			// The "clang" noise wave is based on a similar noise wave in the modded beepbox made by DAzombieRE.
-			let drumBuffer: number = 1;
-			for (let i: number = 0; i < Config.chipNoiseLength; i++) {
-				wave[i] = (drumBuffer & 1) * 2.0 - 1.0;
-				let newBuffer: number = drumBuffer >> 1;
-				if (((drumBuffer + newBuffer) & 1) == 1) {
-					newBuffer += 2 << 14;
-				}
-				drumBuffer = newBuffer;
-			}
-		} else if (index == 3) {
-			// The "buzz" noise wave is based on a similar noise wave in the modded beepbox made by DAzombieRE.
-			let drumBuffer: number = 1;
-			for (let i: number = 0; i < Config.chipNoiseLength; i++) {
-				wave[i] = (drumBuffer & 1) * 2.0 - 1.0;
-				let newBuffer: number = drumBuffer >> 1;
-				if (((drumBuffer + newBuffer) & 1) == 1) {
-					newBuffer += 10 << 2;
-				}
-				drumBuffer = newBuffer;
-			}
-		} else if (index == 4) {
-			// "hollow" drums, designed in frequency space and then converted via FFT:
-			drawNoiseSpectrum(wave, 10, 11, 1, 1, 0);
-			drawNoiseSpectrum(wave, 11, 14, .6578, .6578, 0);
-			inverseRealFourierTransform!(wave, Config.chipNoiseLength);
-			scaleElementsByFactor!(wave, 1.0 / Math.sqrt(Config.chipNoiseLength));
-		} else if (index == 5) {
-			// "Shine" drums from modbox!
-			var drumBuffer = 1;
-			for (var i = 0; i < Config.chipNoiseLength; i++) {
-				wave[i] = (drumBuffer & 1) * 2.0 - 1.0;
-				var newBuffer = drumBuffer >> 1;
-				if (((drumBuffer + newBuffer) & 1) == 1) {
-					newBuffer += 10 << 2;
-				}
-				drumBuffer = newBuffer;
-			}
-		} else if (index == 6) {
-			// "Deep" drums from modbox!
-			drawNoiseSpectrum(wave, 1, 10, 1, 1, 0);
-			drawNoiseSpectrum(wave, 20, 14, -2, -2, 0);
-			inverseRealFourierTransform!(wave, Config.chipNoiseLength);
-			scaleElementsByFactor!(wave, 1.0 / Math.sqrt(Config.chipNoiseLength));
-		} else if (index == 7) {
-			// "Cutter" drums from modbox!
-			var drumBuffer = 1;
-			for (var i = 0; i < Config.chipNoiseLength; i++) {
-				wave[i] = (drumBuffer & 1) * 4.0 * (Math.random() * 14 + 1);
-				var newBuffer = drumBuffer >> 1;
-				if (((drumBuffer + newBuffer) & 1) == 1) {
-					newBuffer += 15 << 2;
-				}
-				drumBuffer = newBuffer;
-			}
-		} else if (index == 8) {
-			// "Metallic" drums from modbox!
-			var drumBuffer = 1;
-			for (var i = 0; i < 32768; i++) {
-				wave[i] = (drumBuffer & 1) / 2.0 + 0.5;
-				var newBuffer = drumBuffer >> 1;
-				if (((drumBuffer + newBuffer) & 1) == 1) {
-					newBuffer -= 10 << 2;
-				}
-				drumBuffer = newBuffer;
-			}
-		} else {
-			throw new Error("Unrecognized drum index: " + index);
-		}
+        if (index == 0) {
+            // The "retro" drum uses a "Linear Feedback Shift Register" similar to the NES noise channel.
+            let drumBuffer: number = 1;
+            for (let i: number = 0; i < Config.chipNoiseLength; i++) {
+                wave[i] = (drumBuffer & 1) * 2.0 - 1.0;
+                let newBuffer: number = drumBuffer >> 1;
+                if (((drumBuffer + newBuffer) & 1) == 1) {
+                    newBuffer += 1 << 14;
+                }
+                drumBuffer = newBuffer;
+            }
+        } else if (index == 1) {
+            // White noise is just random values for each sample.
+            for (let i: number = 0; i < Config.chipNoiseLength; i++) {
+                wave[i] = Math.random() * 2.0 - 1.0;
+            }
+        } else if (index == 2) {
+            // The "clang" noise wave is based on a similar noise wave in the modded beepbox made by DAzombieRE.
+            let drumBuffer: number = 1;
+            for (let i: number = 0; i < Config.chipNoiseLength; i++) {
+                wave[i] = (drumBuffer & 1) * 2.0 - 1.0;
+                let newBuffer: number = drumBuffer >> 1;
+                if (((drumBuffer + newBuffer) & 1) == 1) {
+                    newBuffer += 2 << 14;
+                }
+                drumBuffer = newBuffer;
+            }
+        } else if (index == 3) {
+            // The "buzz" noise wave is based on a similar noise wave in the modded beepbox made by DAzombieRE.
+            let drumBuffer: number = 1;
+            for (let i: number = 0; i < Config.chipNoiseLength; i++) {
+                wave[i] = (drumBuffer & 1) * 2.0 - 1.0;
+                let newBuffer: number = drumBuffer >> 1;
+                if (((drumBuffer + newBuffer) & 1) == 1) {
+                    newBuffer += 10 << 2;
+                }
+                drumBuffer = newBuffer;
+            }
+        } else if (index == 4) {
+            // "hollow" drums, designed in frequency space and then converted via FFT:
+            drawNoiseSpectrum(wave, Config.chipNoiseLength, 10, 11, 1, 1, 0);
+            drawNoiseSpectrum(wave, Config.chipNoiseLength, 11, 14, .6578, .6578, 0);
+            inverseRealFourierTransform!(wave, Config.chipNoiseLength);
+            scaleElementsByFactor!(wave, 1.0 / Math.sqrt(Config.chipNoiseLength));
+        } else if (index == 5) {
+            // "Shine" drums from modbox!
+            var drumBuffer = 1;
+            for (var i = 0; i < Config.chipNoiseLength; i++) {
+                wave[i] = (drumBuffer & 1) * 2.0 - 1.0;
+                var newBuffer = drumBuffer >> 1;
+                if (((drumBuffer + newBuffer) & 1) == 1) {
+                    newBuffer += 10 << 2;
+                }
+                drumBuffer = newBuffer;
+            }
+        } else if (index == 6) {
+            // "Deep" drums from modbox!
+            drawNoiseSpectrum(wave, Config.chipNoiseLength, 1, 10, 1, 1, 0);
+            drawNoiseSpectrum(wave, Config.chipNoiseLength, 20, 14, -2, -2, 0);
+            inverseRealFourierTransform!(wave, Config.chipNoiseLength);
+            scaleElementsByFactor!(wave, 1.0 / Math.sqrt(Config.chipNoiseLength));
+        } else if (index == 7) {
+            // "Cutter" drums from modbox!
+            var drumBuffer = 1;
+            for (var i = 0; i < Config.chipNoiseLength; i++) {
+                wave[i] = (drumBuffer & 1) * 4.0 * (Math.random() * 14 + 1);
+                var newBuffer = drumBuffer >> 1;
+                if (((drumBuffer + newBuffer) & 1) == 1) {
+                    newBuffer += 15 << 2;
+                }
+                drumBuffer = newBuffer;
+            }
+        } else if (index == 8) {
+            // "Metallic" drums from modbox!
+            var drumBuffer = 1;
+            for (var i = 0; i < 32768; i++) {
+                wave[i] = (drumBuffer & 1) / 2.0 + 0.5;
+                var newBuffer = drumBuffer >> 1;
+                if (((drumBuffer + newBuffer) & 1) == 1) {
+                    newBuffer -= 10 << 2;
+                }
+                drumBuffer = newBuffer;
+            }
+        } else {
+            throw new Error("Unrecognized drum index: " + index);
+        }
 
-		wave[Config.chipNoiseLength] = wave[0];
-	}
+        wave[Config.chipNoiseLength] = wave[0];
+    }
 
-	return wave;
+    return wave;
 }
 
-export function drawNoiseSpectrum(wave: Float32Array, lowOctave: number, highOctave: number, lowPower: number, highPower: number, overallSlope: number): number {
-	const referenceOctave: number = 11;
-	const referenceIndex: number = 1 << referenceOctave;
-	const lowIndex: number = Math.pow(2, lowOctave) | 0;
-	const highIndex: number = Math.min(Config.chipNoiseLength >> 1, Math.pow(2, highOctave) | 0);
-	const retroWave: Float32Array = getDrumWave(0);
-	let combinedAmplitude: number = 0.0;
-	for (let i: number = lowIndex; i < highIndex; i++) {
+export function drawNoiseSpectrum(wave: Float32Array, waveLength: number, lowOctave: number, highOctave: number, lowPower: number, highPower: number, overallSlope: number): number {
+    const referenceOctave: number = 11;
+    const referenceIndex: number = 1 << referenceOctave;
+    const lowIndex: number = Math.pow(2, lowOctave) | 0;
+    const highIndex: number = Math.min(waveLength >> 1, Math.pow(2, highOctave) | 0);
+    const retroWave: Float32Array = getDrumWave(0, null, null);
+    let combinedAmplitude: number = 0.0;
+    for (let i: number = lowIndex; i < highIndex; i++) {
 
-		let lerped: number = lowPower + (highPower - lowPower) * (Math.log(i) / Math.LN2 - lowOctave) / (highOctave - lowOctave);
-		//let amplitude: number = Math.pow(2, lerped);
-		//let amplitude: number = Math.pow((lerped + 5) / 7, 4);
-		let amplitude: number = Math.pow(2, (lerped - 1) * Config.spectrumMax + 1) * lerped;
+        let lerped: number = lowPower + (highPower - lowPower) * (Math.log2(i) - lowOctave) / (highOctave - lowOctave);
+        let amplitude: number = Math.pow(2, (lerped - 1) * 7 + 1) * lerped;
 
-		amplitude *= Math.pow(i / referenceIndex, overallSlope);
+        amplitude *= Math.pow(i / referenceIndex, overallSlope);
 
-		combinedAmplitude += amplitude;
+        combinedAmplitude += amplitude;
 
-		// Add two different sources of psuedo-randomness to the noise
-		// (individually they aren't random enough) but in a deterministic
-		// way so that live spectrum editing doesn't result in audible pops.
-		// Multiple all the sine wave amplitudes by 1 or -1 based on the 
-		// LFSR retro wave (effectively random), and also rotate the phase
-		// of each sine wave based on the golden angle to disrupt the symmetry.
-		amplitude *= retroWave[i];
-		const radians: number = 0.61803398875 * i * i * Math.PI * 2.0;
+        // Add two different sources of psuedo-randomness to the noise
+        // (individually they aren't random enough) but in a deterministic
+        // way so that live spectrum editing doesn't result in audible pops.
+        // Multiply all the sine wave amplitudes by 1 or -1 based on the
+        // LFSR retro wave (effectively random), and also rotate the phase
+        // of each sine wave based on the golden angle to disrupt the symmetry.
+        amplitude *= retroWave[i];
+        const radians: number = 0.61803398875 * i * i * Math.PI * 2.0;
 
-		wave[i] = Math.cos(radians) * amplitude;
-		wave[Config.chipNoiseLength - i] = Math.sin(radians) * amplitude;
-	}
+        wave[i] = Math.cos(radians) * amplitude;
+        wave[waveLength - i] = Math.sin(radians) * amplitude;
+    }
 
-	return combinedAmplitude;
+    return combinedAmplitude;
 }
 
 function generateSineWave(): Float64Array {
-	const wave: Float64Array = new Float64Array(Config.sineWaveLength + 1);
-	for (let i: number = 0; i < Config.sineWaveLength + 1; i++) {
-		wave[i] = Math.sin(i * Math.PI * 2.0 / Config.sineWaveLength);
-	}
-	return wave;
+    const wave: Float64Array = new Float64Array(Config.sineWaveLength + 1);
+    for (let i: number = 0; i < Config.sineWaveLength + 1; i++) {
+        wave[i] = Math.sin(i * Math.PI * 2.0 / Config.sineWaveLength);
+    }
+    return wave;
+}
+
+function generateTriWave(): Float64Array {
+    const wave: Float64Array = new Float64Array(Config.sineWaveLength + 1);
+    for (let i: number = 0; i < Config.sineWaveLength + 1; i++) {
+        wave[i] = Math.asin(Math.sin(i * Math.PI * 2.0 / Config.sineWaveLength)) / (Math.PI / 2);
+    }
+    return wave;
+}
+
+function generateTrapezoidWave(drive: number = 2): Float64Array {
+    const wave: Float64Array = new Float64Array(Config.sineWaveLength + 1);
+    for (let i: number = 0; i < Config.sineWaveLength + 1; i++) {
+        wave[i] = Math.max(-1.0, Math.min(1.0, Math.asin(Math.sin(i * Math.PI * 2.0 / Config.sineWaveLength)) * drive));
+    }
+    return wave;
+}
+
+function generateSquareWave(phaseWidth: number = 0): Float64Array {
+    const wave: Float64Array = new Float64Array(Config.sineWaveLength + 1);
+    const centerPoint: number = Config.sineWaveLength / 4;
+    for (let i: number = 0; i < Config.sineWaveLength + 1; i++) {
+        wave[i] = +((Math.abs(i - centerPoint) < phaseWidth * Config.sineWaveLength / 2)
+            || ((Math.abs(i - Config.sineWaveLength - centerPoint) < phaseWidth * Config.sineWaveLength / 2))) * 2 - 1;
+    }
+    return wave;
+}
+
+function generateSawWave(inverse: boolean = false): Float64Array {
+    const wave: Float64Array = new Float64Array(Config.sineWaveLength + 1);
+    for (let i: number = 0; i < Config.sineWaveLength + 1; i++) {
+        wave[i] = ((i + (Config.sineWaveLength / 4.0)) * 2.0 / Config.sineWaveLength) % 2 - 1;
+        wave[i] = inverse ? -wave[i] : wave[i];
+    }
+    return wave;
 }
 
 export function getArpeggioPitchIndex(pitchCount: number, useFastTwoNoteArp: boolean, arpeggio: number): number {
-	let arpeggioPattern: ReadonlyArray<number> = Config.arpeggioPatterns[pitchCount - 1];
-	if (arpeggioPattern != null) {
-		if (pitchCount == 2 && useFastTwoNoteArp == false) {
-			arpeggioPattern = [0, 0, 1, 1];
-		}
-		return arpeggioPattern[arpeggio % arpeggioPattern.length];
-	} else {
-		return arpeggio % pitchCount;
-	}
+    let arpeggioPattern: ReadonlyArray<number> = Config.arpeggioPatterns[pitchCount - 1];
+    if (arpeggioPattern != null) {
+        if (pitchCount == 2 && useFastTwoNoteArp == false) {
+            arpeggioPattern = [0, 0, 1, 1];
+        }
+        return arpeggioPattern[arpeggio % arpeggioPattern.length];
+    } else {
+        return arpeggio % pitchCount;
+    }
 }
 
 // Pardon the messy type casting. This allows accessing array members by numerical index or string name.
 export function toNameMap<T extends BeepBoxOption>(array: Array<Pick<T, Exclude<keyof T, "index">>>): DictionaryArray<T> {
-	const dictionary: Dictionary<T> = {};
-	for (let i: number = 0; i < array.length; i++) {
-		const value: any = array[i];
-		value.index = i;
-		dictionary[value.name] = <T>value;
-	}
-	const result: DictionaryArray<T> = <DictionaryArray<T>><any>array;
-	result.dictionary = dictionary;
-	return result;
+    const dictionary: Dictionary<T> = {};
+    for (let i: number = 0; i < array.length; i++) {
+        const value: any = array[i];
+        value.index = i;
+        dictionary[value.name] = <T>value;
+    }
+    const result: DictionaryArray<T> = <DictionaryArray<T>><any>array;
+    result.dictionary = dictionary;
+    return result;
+}
+
+export function effectsIncludeTransition(effects: number): boolean {
+    return (effects & (1 << EffectType.transition)) != 0;
+}
+export function effectsIncludeChord(effects: number): boolean {
+    return (effects & (1 << EffectType.chord)) != 0;
+}
+export function effectsIncludePitchShift(effects: number): boolean {
+    return (effects & (1 << EffectType.pitchShift)) != 0;
+}
+export function effectsIncludeDetune(effects: number): boolean {
+    return (effects & (1 << EffectType.detune)) != 0;
+}
+export function effectsIncludeVibrato(effects: number): boolean {
+    return (effects & (1 << EffectType.vibrato)) != 0;
+}
+export function effectsIncludeNoteFilter(effects: number): boolean {
+    return (effects & (1 << EffectType.noteFilter)) != 0;
+}
+export function effectsIncludeDistortion(effects: number): boolean {
+    return (effects & (1 << EffectType.distortion)) != 0;
+}
+export function effectsIncludeBitcrusher(effects: number): boolean {
+    return (effects & (1 << EffectType.bitcrusher)) != 0;
+}
+export function effectsIncludePanning(effects: number): boolean {
+    return (effects & (1 << EffectType.panning)) != 0;
+}
+export function effectsIncludeChorus(effects: number): boolean {
+    return (effects & (1 << EffectType.chorus)) != 0;
+}
+export function effectsIncludeEcho(effects: number): boolean {
+    return (effects & (1 << EffectType.echo)) != 0;
+}
+export function effectsIncludeReverb(effects: number): boolean {
+    return (effects & (1 << EffectType.reverb)) != 0;
+}
+export function rawChipToIntegrated(raw: DictionaryArray<ChipWave>): DictionaryArray<ChipWave> {
+    const newArray: Array<ChipWave> = new Array<ChipWave>(raw.length);
+    const dictionary: Dictionary<ChipWave> = {};
+    for (let i: number = 0; i < newArray.length; i++) {
+        newArray[i] = Object.assign([], raw[i]);
+        const value: any = newArray[i];
+        value.index = i;
+        dictionary[value.name] = <ChipWave>value;
+    }
+    for (let key in dictionary) {
+        dictionary[key].samples = performIntegral(dictionary[key].samples);
+    }
+    const result: DictionaryArray<ChipWave> = <DictionaryArray<ChipWave>><any>newArray;
+    result.dictionary = dictionary;
+    return result;
 }
 //}

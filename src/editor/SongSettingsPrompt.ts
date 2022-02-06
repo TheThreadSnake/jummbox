@@ -1,4 +1,4 @@
-// Copyright (C) 2020 John Nesky, distributed under the MIT license.
+// Copyright (C) 2021 John Nesky, distributed under the MIT license.
 
 import { Config } from "../synth/SynthConfig";
 import { HTML } from "imperative-html/dist/esm/elements-strict";
@@ -8,8 +8,7 @@ import { ChangeGroup } from "./Change";
 import { ChangeBeatsPerBar, ChangeBarCount, ChangeEdo } from "./changes";
 import { ColorConfig } from "./ColorConfig";
 
-//namespace beepbox {
-const { button, div, span, h2, input, br, select, option } = HTML;
+	const {button, div, span, h2, input, br, select, option} = HTML;
 
 export class SongSettingsPrompt implements Prompt {
 	private readonly _edoStepper: HTMLInputElement = input({ style: "width: 3em; margin-left: 1em;", type: "number", step: "1" });
@@ -45,13 +44,13 @@ export class SongSettingsPrompt implements Prompt {
 			div({ style: "display: inline-block; text-align: right;" },
 				"Bars per song:",
 				br(),
-				span({ style: `font-size: smaller; color: ${ColorConfig.secondaryText};` }, "(Multiples of 4 are recommended)"),
+					span({style: `font-size: smaller; color: ${ColorConfig.secondaryText};`}, "(Multiples of 4 are recommended)"),
 
 			),
 			this._barsStepper,
 		),
-		div({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: flex-end;" },
-			div({ class: "selectContainer", style: "width: 100%;" }, this._positionSelect),
+			div({style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: flex-end;"},
+				div({class: "selectContainer", style: "width: 100%;"}, this._positionSelect),
 		),
 		div({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: flex-end;" },
 			div({ style: "text-align: right;" },
@@ -69,7 +68,7 @@ export class SongSettingsPrompt implements Prompt {
 		),
 		this._cancelButton,
 	);
-
+		
 	constructor(private _doc: SongDocument) {
 
 		this._edoStepper.value = this._doc.song.edo + "";
@@ -117,11 +116,11 @@ export class SongSettingsPrompt implements Prompt {
 
 		this.container.addEventListener("keydown", this._whenKeyPressed);
 	}
-
-	private _close = (): void => {
+		
+		private _close = (): void => { 
 		this._doc.undo();
 	}
-
+		
 	public cleanUp = (): void => {
 		this._okayButton.removeEventListener("click", this._saveChanges);
 		this._cancelButton.removeEventListener("click", this._close);
@@ -133,13 +132,13 @@ export class SongSettingsPrompt implements Prompt {
 		this._barsStepper.removeEventListener("blur", SongSettingsPrompt._validateNumber);
 		this.container.removeEventListener("keydown", this._whenKeyPressed);
 	}
-
+		
 	private _whenKeyPressed = (event: KeyboardEvent): void => {
-		if ((<Element>event.target).tagName != "BUTTON" && event.keyCode == 13) { // Enter key
+			if ((<Element> event.target).tagName != "BUTTON" && event.keyCode == 13) { // Enter key
 			this._saveChanges();
 		}
 	}
-
+		
 	private static _validateKey(event: KeyboardEvent): boolean {
 		const charCode = (event.which) ? event.which : event.keyCode;
 		if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
@@ -148,16 +147,16 @@ export class SongSettingsPrompt implements Prompt {
 		}
 		return false;
 	}
-
+		
 	private static _validateNumber(event: Event): void {
 		const input: HTMLInputElement = <HTMLInputElement>event.target;
 		input.value = String(SongSettingsPrompt._validate(input));
 	}
-
+		
 	private static _validate(input: HTMLInputElement): number {
 		return Math.floor(Math.max(Number(input.min), Math.min(Number(input.max), Number(input.value))));
 	}
-
+		
 	private _saveChanges = (): void => {
 		window.localStorage.setItem("beatCountStrategy", this._conversionStrategySelect.value);
 		window.localStorage.setItem("barCountPosition", this._positionSelect.value);
@@ -169,4 +168,3 @@ export class SongSettingsPrompt implements Prompt {
 		this._doc.record(group, true);
 	}
 }
-//}
